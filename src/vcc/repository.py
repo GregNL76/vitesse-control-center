@@ -120,6 +120,61 @@ class Repository:
 
         return cursor.fetchall()
 
+        # -------------------------------------------------------------
+
+    def games_with_latest_versions(self):
+
+        """
+        Returns all installed base games together with the
+        latest version available on Tinfoil.
+        """
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+
+                b.title_id,
+
+                b.name,
+
+                COALESCE(
+                    MAX(u.version),
+                    0
+                ) AS installed_version,
+
+                COALESCE(
+                    t.version,
+                    0
+                ) AS latest_version
+
+            FROM games b
+
+            LEFT JOIN games u
+
+                ON u.title_id =
+                    substr(b.title_id,1,13) || '800'
+
+                AND u.file_type='UPDATE'
+
+            LEFT JOIN tinfoil_titles t
+
+                ON t.title_id = b.title_id
+
+            WHERE
+                b.file_type='BASE'
+
+            GROUP BY
+                b.title_id,
+                b.name,
+                t.version
+
+            ORDER BY
+                b.name
+            """
+        )
+
+        return cursor.fetchall()
+    
     # -------------------------------------------------------------
 
     def orphan_updates(self):
@@ -171,6 +226,25 @@ class Repository:
             HAVING COUNT(*) > 1
 
             ORDER BY title_id
+            """
+        )
+
+        return cursor.fetchall()
+        
+    def debug_title_ids(self):
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+                b.title_id AS base_title_id,
+                substr(b.title_id,1,13) || '800' AS update_title_id,
+                t.title_id AS tinfoil_title_id,
+                t.version
+            FROM games b
+            LEFT JOIN tinfoil_titles t
+                ON t.title_id = b.title_id
+            WHERE b.file_type='BASE'
+            LIMIT 20
             """
         )
 

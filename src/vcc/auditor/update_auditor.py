@@ -1,10 +1,11 @@
 """
 VCC - Update auditor
+
+Compares installed game versions with the latest versions
+available in the locally synchronized Tinfoil database.
 """
 
 from __future__ import annotations
-
-from .tinfoil_client import TinfoilClient
 
 
 class UpdateAuditor:
@@ -13,35 +14,29 @@ class UpdateAuditor:
 
         self.repository = repository
 
-        self.client = TinfoilClient()
-
-    # -------------------------------------------------------------
-
-    @staticmethod
-    def update_titleid(base_titleid: str):
-
-        return base_titleid[:-3] + "800"
-
     # -------------------------------------------------------------
 
     def audit(self):
 
+        """
+        Returns a list of games for which a newer update
+        exists in the Tinfoil database.
+        """
+
         report = []
 
-        games = self.repository.all_games()
+        games = self.repository.games_with_latest_versions()
 
         for game in games:
 
-            update_titleid = self.update_titleid(game["title_id"])
-
-            latest = self.client.latest_update_version(
-                update_titleid
-            )
-
             installed = game["installed_version"]
+            latest = game["latest_version"]
 
-            if latest is None:
-                continue
+            print(
+                game["name"],
+                "installed=", installed,
+                "latest=", latest,
+            )
 
             if latest > installed:
 

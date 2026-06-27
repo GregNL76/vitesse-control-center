@@ -3,18 +3,24 @@ __pycache__/
 *.py[cod]
 *.pyo
 
-# Virtual environments
+# Virtual env
 .venv/
 venv/
 
-# VSCode
-.vscode/
-
-# Runtime
-logs/
-data/
+# SQLite
+*.sqlite
 *.db
 
-# OS
-.DS_Store
-Thumbs.db
+# Logs
+logs/
+*.log
+
+# VS Code
+.vscode/
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/

@@ -4,13 +4,13 @@ Vitesse Control Center
 Main entry point.
 """
 
-from src.vcc.auditor.sync_tinfoil import TinfoilSync
+from src.vcc.auditor.update_auditor import UpdateAuditor
 from src.vcc.config import GAME_FOLDER
 from src.vcc.database import Database
 from src.vcc.logger import get_logger
 from src.vcc.repository import Repository
 from src.vcc.scanner import scan
-
+from src.vcc.auditor.tinfoil_sync import TinfoilSync
 
 def print_database_stats(logger, database: Database):
 
@@ -80,40 +80,22 @@ def print_largest_games(logger, repo: Repository):
             row["file_type"],
         )
 
-
-def print_repository_test(logger, repo: Repository):
-
-    logger.info("")
-    logger.info("Repository test")
-    logger.info("-----------------------------------")
-
-    for game in repo.all_games()[:5]:
-
-        logger.info(
-            "%-40s installed=%s",
-            game["name"],
-            game["installed_version"],
-        )
-
-
-def run_tinfoil_sync(logger):
+def run_tinfoil_sync(logger, database):
 
     logger.info("")
     logger.info("Downloading Tinfoil database")
     logger.info("-----------------------------------")
 
-    sync = TinfoilSync()
+    sync = TinfoilSync(database)
 
-    sync.download()
+    count = sync.sync()
 
     logger.info("")
     logger.info("Tinfoil")
     logger.info("-----------------------------------")
-    logger.info("Titles downloaded : %s", sync.total_titles)
+    logger.info("Titles downloaded : %s", count)
 
-    return sync
-
-
+   
 def main():
 
     logger = get_logger()
@@ -146,10 +128,29 @@ def main():
 
         print_largest_games(logger, repo)
 
-        print_repository_test(logger, repo)
+        run_tinfoil_sync(
+            logger,
+            database,
+        )
+    
+        auditor = UpdateAuditor(repo)
 
-        run_tinfoil_sync(logger)
+        report = auditor.audit()
 
+        logger.info("")
+        logger.info("Update Auditor")
+        logger.info("-----------------------------------")
+        logger.info("Missing updates : %s", len(report))
+
+        for game in report[:20]:
+
+            logger.info(
+                "%-45s installed=%-8s latest=%s",
+                game["name"],
+                game["installed"],
+                game["latest"],
+            )   
+    
     finally:
 
         database.close()

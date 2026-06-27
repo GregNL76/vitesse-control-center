@@ -13,7 +13,7 @@ from .config import DATA_DIR, DATABASE_FILE
 from .game import GameFile
 from .library import Library
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 class Database:
@@ -93,6 +93,28 @@ class Database:
             ON games(name)
             """
         )
+        
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS tinfoil_titles
+            (
+                title_id        TEXT PRIMARY KEY,
+
+                name            TEXT NOT NULL,
+
+                version         INTEGER NOT NULL,
+
+                synced_at       TEXT NOT NULL
+            )
+            """
+        )
+
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_tinfoil_titleid
+            ON tinfoil_titles(title_id)
+            """
+        )
 
         cursor.execute(
             """
@@ -142,7 +164,22 @@ class Database:
         Remove all stored game records.
         """
 
-        self.connection.execute("DELETE FROM games")
+        self.connection.execute(
+            "DELETE FROM games"
+        )
+
+
+    # -----------------------------------------------------------------
+
+    def clear_tinfoil_titles(self):
+
+        """
+        Remove all Tinfoil titles.
+        """
+
+        self.connection.execute(
+            "DELETE FROM tinfoil_titles"
+        )
 
     # -----------------------------------------------------------------
 
@@ -211,8 +248,49 @@ class Database:
                 )
 
         self.connection.commit()
-        
-            # -----------------------------------------------------------------
+
+    # -----------------------------------------------------------------
+
+    def save_tinfoil_titles(self, titles: dict):
+
+        """
+        Store the complete Tinfoil title database.
+        """
+
+        from datetime import datetime
+
+        self.clear_tinfoil_titles()
+
+        synced = datetime.utcnow().isoformat()
+
+        self.connection.executemany(
+            """
+            INSERT INTO tinfoil_titles
+            (
+                title_id,
+                name,
+                version,
+                synced_at
+            )
+            VALUES
+            (
+                ?,?,?,?
+            )
+            """,
+            [
+                (
+                    item["title_id"],
+                    item["name"],
+                    item["version"],
+                    synced,
+                )
+                for item in titles.values()
+            ],
+        )
+
+        self.connection.commit()
+
+    # -----------------------------------------------------------------
 
     def stats(self) -> dict:
 
@@ -226,9 +304,19 @@ class Database:
         )
 
         game_files = cursor.fetchone()[0]
+        
+        cursor.execute(
+            """
+            SELECT COUNT(*)
+            FROM tinfoil_titles
+            """
+        )
+
+        tinfoil_titles = cursor.fetchone()[0]
 
         return {
             "database": str(self.database_file),
             "schema": self.schema_version,
             "game_files": game_files,
+            "tinfoil_titles": tinfoil_titles,
         }
