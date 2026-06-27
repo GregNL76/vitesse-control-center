@@ -1,23 +1,21 @@
-# Vitesse Control Center
+# Vitesse Control Center (VCC)
 
-Vitesse Control Center (VCC) is a professional Nintendo Switch library management system designed for Synology NAS.
+VCC is a Nintendo Switch Library Management System designed for Synology NAS.
 
-## Planned features
+## Features (planned)
 
-- Library scanner
-- Tinfoil synchronization
-- Update detection
-- SQLite database
-- Health checks
+- Library Scanner
+- SQLite Database
+- Tinfoil Synchronization
+- Health Check
 - Dashboard
-- Search & filters
-- Cloudflare support
+- Cloudflare Integration
 
-## Status
+## Requirements
 
-🚧 Under development
-
-## Platform
-
-- Synology DSM
 - Python 3.8+
+- Synology DSM (target platform)
+
+## Current milestone
+
+Milestone 1 - Foundation
