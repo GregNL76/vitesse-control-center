@@ -15,7 +15,7 @@ DATABASE_FILE = DATA_DIR / "vcc.sqlite"
 # Nintendo Switch library
 # -----------------------------------------------------------------------------
 
-GAME_FOLDER = Path("/volume1/web/games")
+GAME_FOLDER = Path("T:/")
 
 SUPPORTED_EXTENSIONS = (
     ".nsp",
