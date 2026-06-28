@@ -16,21 +16,12 @@ class TinfoilSync:
     def __init__(self, database):
         self.database = database
 
-    def download(self) -> dict:
+    def download(self):
 
-        print("Downloading TitleDB...")
-
-        response = requests.get(self.TITLEDB_URL, timeout=60)
+        response = requests.get(self.TITLEDB_URL, timeout=30)
         response.raise_for_status()
 
-        data = response.json()
-
-        first_key = next(iter(data))
-
-        print("First title:", first_key)
-        print("Data:", data[first_key])
-
-        return data
+        return response.json()
 
     def normalize(self, data: dict) -> dict:
 

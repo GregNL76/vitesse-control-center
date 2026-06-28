@@ -10,7 +10,22 @@ from .database import Database
 
 
 class Repository:
+    
+    def statistics(self):
 
+        return {
+
+            "games": self.total_game_files(),
+
+            "base_games": self.total_base_games(),
+
+            "updates": self.total_updates(),
+
+            "orphan_updates": len(self.orphan_updates()),
+
+            "duplicate_updates": len(self.duplicate_updates()),
+        }
+    
     def __init__(self, database: Database):
 
         self.database = database

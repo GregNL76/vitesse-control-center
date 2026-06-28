@@ -6,7 +6,7 @@ available in the locally synchronized Tinfoil database.
 """
 
 from __future__ import annotations
-
+from src.vcc.url_builder import UrlBuilder
 
 class UpdateAuditor:
 
@@ -32,20 +32,16 @@ class UpdateAuditor:
             installed = game["installed_version"]
             latest = game["latest_version"]
 
-            print(
-                game["name"],
-                "installed=", installed,
-                "latest=", latest,
-            )
-
             if latest > installed:
 
                 report.append(
                     {
-                        "name": game["name"],
                         "title_id": game["title_id"],
-                        "installed": installed,
+                        "name": game["name"],
+                        "installed": installed, 
                         "latest": latest,
+                        "url": UrlBuilder.game_url(game["name"]),
+                        "search_url": UrlBuilder.search_url(game["name"]),
                     }
                 )
 

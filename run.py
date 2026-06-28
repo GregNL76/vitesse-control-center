@@ -11,6 +11,9 @@ from src.vcc.logger import get_logger
 from src.vcc.repository import Repository
 from src.vcc.scanner import scan
 from src.vcc.auditor.tinfoil_sync import TinfoilSync
+from src.vcc.auditor.report_writer import ReportWriter
+from src.vcc.services.update_service import UpdateService
+from src.vcc.services.sync_service import SyncService
 
 def print_database_stats(logger, database: Database):
 
@@ -80,22 +83,7 @@ def print_largest_games(logger, repo: Repository):
             row["file_type"],
         )
 
-def run_tinfoil_sync(logger, database):
 
-    logger.info("")
-    logger.info("Downloading Tinfoil database")
-    logger.info("-----------------------------------")
-
-    sync = TinfoilSync(database)
-
-    count = sync.sync()
-
-    logger.info("")
-    logger.info("Tinfoil")
-    logger.info("-----------------------------------")
-    logger.info("Titles downloaded : %s", count)
-
-   
 def main():
 
     logger = get_logger()
@@ -128,28 +116,28 @@ def main():
 
         print_largest_games(logger, repo)
 
-        run_tinfoil_sync(
-            logger,
-            database,
-        )
-    
-        auditor = UpdateAuditor(repo)
+        logger.info("")
+        logger.info("Downloading Tinfoil database")
+        logger.info("-----------------------------------")
 
-        report = auditor.audit()
+        count = SyncService(database).run()
 
+        logger.info("")
+        logger.info("Tinfoil")
+        logger.info("-----------------------------------")
+        logger.info("Titles downloaded : %s", count)
+
+        service = UpdateService(database)
+
+        report = service.run()
+        
         logger.info("")
         logger.info("Update Auditor")
         logger.info("-----------------------------------")
         logger.info("Missing updates : %s", len(report))
-
-        for game in report[:20]:
-
-            logger.info(
-                "%-45s installed=%-8s latest=%s",
-                game["name"],
-                game["installed"],
-                game["latest"],
-            )   
+        logger.info("Text report     : reports/missing_updates.txt")
+        logger.info("CSV report      : reports/missing_updates.csv")  
+        logger.info("HTML report     : reports/missing_updates.html")
     
     finally:
 

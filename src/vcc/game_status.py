@@ -1,0 +1,16 @@
+from enum import Enum
+
+
+class GameStatus(Enum):
+
+    OK = "OK"
+
+    OUTDATED = "OUTDATED"
+
+    NO_UPDATE_AVAILABLE = "NO_UPDATE_AVAILABLE"
+
+    ORPHAN_UPDATE = "ORPHAN_UPDATE"
+
+    DUPLICATE_UPDATE = "DUPLICATE_UPDATE"
+
+    UNKNOWN = "UNKNOWN"

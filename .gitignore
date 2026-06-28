@@ -1,26 +1,15 @@
 # Python
 __pycache__/
-*.py[cod]
-*.pyo
+*.pyc
 
-# Virtual env
+# Virtual environment
 .venv/
-venv/
 
-# SQLite
-*.sqlite
-*.db
+# Reports
+reports/
 
 # Logs
 logs/
-*.log
 
-# VS Code
-.vscode/
-
-# Pytest
-.pytest_cache/
-
-# Coverage
-.coverage
-htmlcov/
+# SQLite (optioneel)
+data/vcc.sqlite
