@@ -11,6 +11,7 @@ dashboard_bp = Blueprint("dashboard", __name__)
 def get_database():
     if "database" not in g:
         g.database = Database()
+        g.database.initialize()
     return g.database
 
 
@@ -41,11 +42,13 @@ def close_database(error=None):
 @dashboard_bp.route("/")
 def index():
 
-    stats = get_dashboard_service().statistics()
+    dashboard_service = get_dashboard_service()
 
     return render_template(
         "dashboard.html",
-        stats=stats,
+        stats=dashboard_service.statistics(),
+        health=dashboard_service.library_health(),
+        activity=dashboard_service.recent_activity(),
     )
 
 

@@ -118,6 +118,28 @@ class Database:
 
         cursor.execute(
             """
+            CREATE TABLE IF NOT EXISTS activity_log
+            (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp       TEXT NOT NULL,
+                event_type      TEXT NOT NULL,
+                severity        TEXT NOT NULL,
+                title           TEXT NOT NULL,
+                message         TEXT NOT NULL,
+                details_json    TEXT
+            )
+            """
+        )
+
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_activity_event_type
+            ON activity_log(event_type)
+            """
+        )
+
+        cursor.execute(
+            """
             INSERT OR REPLACE INTO metadata
             (
                 key,

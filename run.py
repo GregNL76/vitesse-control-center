@@ -148,6 +148,17 @@ def main():
         database.save_library(library)
 
         repo = Repository(database)
+        scan_summary = library.summary()
+        repo.add_activity(
+            event_type="scan",
+            severity="success",
+            title="Library scan complete",
+            message=f"Scanned {scan_summary['games']} game files.",
+            details_json={
+                "games_scanned": scan_summary["games"],
+                "warning_count": 0,
+            },
+        )
 
         print_library_summary(logger, library)
 

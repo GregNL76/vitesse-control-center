@@ -72,6 +72,114 @@ class Repository:
         return cursor.fetchone()[0]
 
     # -------------------------------------------------------------
+    def total_storage(self) -> int:
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT COALESCE(SUM(size), 0)
+            FROM games
+            """
+        )
+
+        return cursor.fetchone()[0]
+
+    # -------------------------------------------------------------
+
+    def add_activity(
+        self,
+        event_type: str,
+        severity: str,
+        title: str,
+        message: str,
+        details_json: str | None = None,
+        timestamp: str | None = None,
+    ):
+
+        from datetime import datetime
+        import json
+
+        if timestamp is None:
+            timestamp = datetime.utcnow().isoformat()
+
+        if details_json is not None and not isinstance(details_json, str):
+            details_json = json.dumps(details_json)
+
+        self.database.connection.execute(
+            """
+            INSERT INTO activity_log
+            (
+                timestamp,
+                event_type,
+                severity,
+                title,
+                message,
+                details_json
+            )
+            VALUES
+            (
+                ?,?,?,?,?,?
+            )
+            """,
+            (
+                timestamp,
+                event_type,
+                severity,
+                title,
+                message,
+                details_json,
+            ),
+        )
+
+        self.database.connection.commit()
+
+    # -------------------------------------------------------------
+
+    def recent_activity(self, limit: int = 5):
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+                id,
+                timestamp,
+                event_type,
+                severity,
+                title,
+                message,
+                details_json
+            FROM activity_log
+            ORDER BY timestamp DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+
+        return cursor.fetchall()
+
+    # -------------------------------------------------------------
+
+    def last_event(self, event_type: str):
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+                id,
+                timestamp,
+                event_type,
+                severity,
+                title,
+                message,
+                details_json
+            FROM activity_log
+            WHERE event_type = ?
+            ORDER BY timestamp DESC
+            LIMIT 1
+            """,
+            (event_type,),
+        )
+
+        return cursor.fetchone()
+
+    # -------------------------------------------------------------
 
     def largest_games(self, limit: int = 10):
 
@@ -252,6 +360,19 @@ class Repository:
 
         return cursor.fetchall()
 
+    # -------------------------------------------------------------
+
+    def total_storage(self) -> int:
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+                COALESCE(SUM(size), 0)
+            FROM games
+            """
+        )
+
+        return cursor.fetchone()[0]
  
     def debug_title_ids(self):
 
