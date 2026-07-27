@@ -1,0 +1,397 @@
+:root {
+
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-hover: #1f2630;
+
+    --border: #30363d;
+
+    --text: #c9d1d9;
+    --muted: #8b949e;
+
+    --accent: #58a6ff;
+
+    --success: #3fb950;
+    --warning: #d29922;
+    --danger: #f85149;
+
+    --sidebar-width: 250px;
+
+}
+
+* {
+
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+}
+
+html,
+body {
+
+    height: 100%;
+
+    background: var(--bg);
+    color: var(--text);
+
+    font-family:
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+
+}
+
+a {
+
+    color: inherit;
+    text-decoration: none;
+
+}
+
+.app {
+
+    display: flex;
+    min-height: 100vh;
+
+}
+
+/* ------------------------------------------------ */
+/* Sidebar                                          */
+/* ------------------------------------------------ */
+
+.sidebar {
+
+    width: var(--sidebar-width);
+
+    background: var(--panel);
+
+    border-right: 1px solid var(--border);
+
+    display: flex;
+    flex-direction: column;
+
+}
+
+.sidebar-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 24px;
+
+    border-bottom: 1px solid var(--border);
+
+}
+
+.logo {
+
+    width: 48px;
+    height: 48px;
+
+    border-radius: 10px;
+
+    background: var(--accent);
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+
+}
+
+.logo-title {
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+}
+
+.logo-subtitle {
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+}
+
+.menu {
+
+    padding: 20px 12px;
+
+}
+
+.menu hr {
+
+    border-color: var(--border);
+
+    margin: 18px 0;
+
+}
+
+.menu-item {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    margin-bottom: 4px;
+
+    color: var(--text);
+
+    transition: 0.15s;
+
+}
+
+.menu-item:hover {
+
+    background: var(--panel-hover);
+
+    color: white;
+
+}
+
+.menu-item i {
+
+    width: 20px;
+
+}
+
+/* ------------------------------------------------ */
+/* Main                                             */
+/* ------------------------------------------------ */
+
+.main {
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+}
+
+.topbar {
+
+    height: 70px;
+
+    padding: 0 30px;
+
+    border-bottom: 1px solid var(--border);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+.page-title {
+
+    font-size: 28px;
+
+    font-weight: 700;
+
+    margin: 0;
+
+}
+
+.status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+}
+
+.status-dot {
+
+    width: 10px;
+
+    height: 10px;
+
+    border-radius: 50%;
+
+    background: var(--success);
+
+}
+
+.content {
+
+    padding: 30px;
+
+}
+
+/* ------------------------------------------------ */
+/* Cards                                            */
+/* ------------------------------------------------ */
+
+.card {
+
+    background: var(--panel);
+
+    border: 1px solid var(--border);
+
+    color: var(--text);
+
+    border-radius: 12px;
+
+}
+
+.card-header {
+
+    border-bottom: 1px solid var(--border);
+
+    background: transparent;
+
+    color: var(--muted);
+
+}
+
+.card-title {
+
+    margin-bottom: 0;
+
+}
+
+.card-value {
+
+    font-size: 42px;
+
+    font-weight: bold;
+
+    line-height: 1;
+
+    margin-bottom: 10px;
+
+}
+
+.card-subtitle {
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+}
+
+/* ------------------------------------------------ */
+/* Buttons                                          */
+/* ------------------------------------------------ */
+
+.btn-primary {
+
+    background: var(--accent);
+
+    border: none;
+
+}
+
+.btn-primary:hover {
+
+    filter: brightness(110%);
+
+}
+
+.btn-outline-secondary {
+
+    border-color: var(--border);
+
+    color: var(--text);
+
+}
+
+.btn-outline-secondary:hover {
+
+    background: var(--panel-hover);
+
+    border-color: var(--border);
+
+}
+
+/* ------------------------------------------------ */
+/* Tables                                           */
+/* ------------------------------------------------ */
+
+.table {
+
+    color: var(--text);
+
+}
+
+.table thead {
+
+    border-color: var(--border);
+
+}
+
+.table td,
+.table th {
+
+    border-color: var(--border);
+
+}
+
+/* ------------------------------------------------ */
+/* Badges                                           */
+/* ------------------------------------------------ */
+
+.badge-success {
+
+    background: var(--success);
+
+}
+
+.badge-warning {
+
+    background: var(--warning);
+
+}
+
+.badge-danger {
+
+    background: var(--danger);
+
+}
+
+/* ------------------------------------------------ */
+/* Responsive                                       */
+/* ------------------------------------------------ */
+
+@media (max-width: 900px) {
+
+    .sidebar {
+
+        display: none;
+
+    }
+
+    .content {
+
+        padding: 20px;
+
+    }
+
+}

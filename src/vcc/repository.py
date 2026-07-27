@@ -224,6 +224,8 @@ class Repository:
             """
             SELECT
 
+                name,
+
                 title_id,
 
                 version,
@@ -235,17 +237,22 @@ class Repository:
             WHERE file_type='UPDATE'
 
             GROUP BY
+
+                name,
+
                 title_id,
+
                 version
 
             HAVING COUNT(*) > 1
 
-            ORDER BY title_id
+            ORDER BY name
             """
         )
 
         return cursor.fetchall()
-        
+
+ 
     def debug_title_ids(self):
 
         cursor = self.database.connection.execute(

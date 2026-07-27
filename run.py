@@ -67,6 +67,47 @@ def print_repository_stats(logger, repo: Repository):
     logger.info("Base games         : %s", repo.total_base_games())
     logger.info("Updates            : %s", repo.total_updates())
 
+def print_orphan_updates(logger, repo: Repository):
+
+    orphans = repo.orphan_updates()
+
+    if not orphans:
+        return
+
+    logger.info("")
+    logger.info("Orphan updates")
+    logger.info("-----------------------------------")
+
+    for update in orphans:
+
+        logger.info(
+            "%-45s v%-8s %s",
+            update["name"],
+            update["version"],
+            update["title_id"],
+        )
+         
+         
+def print_duplicate_updates(logger, repo: Repository):
+
+    duplicates = repo.duplicate_updates()
+
+    if not duplicates:
+        return
+
+    logger.info("")
+    logger.info("Duplicate updates")
+    logger.info("-----------------------------------")
+
+    for update in duplicates:
+
+        logger.info(
+            "%-45s v%-8s (%s copies)",
+            update["name"],
+            update["version"],
+            update["duplicates"],
+        )
+
 
 def print_largest_games(logger, repo: Repository):
 
@@ -113,6 +154,10 @@ def main():
         print_first_games(logger, library)
 
         print_repository_stats(logger, repo)
+
+        print_orphan_updates(logger, repo)
+
+        print_duplicate_updates(logger, repo)
 
         print_largest_games(logger, repo)
 

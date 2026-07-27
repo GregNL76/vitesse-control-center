@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+
+{% block title %}Games{% endblock %}
+
+{% block content %}
+
+<h1>Games</h1>
+
+<div style="margin-bottom:15px;">
+    <input
+        id="quickFilter"
+        type="text"
+        placeholder="Zoek game..."
+        style="
+            width:350px;
+            padding:10px;
+            border-radius:6px;
+            border:1px solid #444;
+            background:#1b1f27;
+            color:white;
+        ">
+</div>
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-grid.css">
+
+<link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/ag-grid-community/styles/ag-theme-quartz.css">
+
+<div id="games-grid"
+     class="ag-theme-quartz-dark"
+     style="height:700px;width:100%;">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community/dist/ag-grid-community.min.js"></script>
+
+<script>
+
+async function loadGrid() {
+
+    const response = await fetch("/api/games");
+    const data = await response.json();
+
+    const gridOptions = {
+
+        rowData: data,
+
+        defaultColDef: {
+            sortable: true,
+            filter: true,
+            resizable: true
+        },
+
+        columnDefs: [
+
+            {
+                field: "name",
+                headerName: "Game",
+                flex: 3
+            },
+
+            {
+                field: "installed_display",
+                headerName: "Installed",
+                width: 170,
+
+                comparator: (valueA, valueB, nodeA, nodeB) => {
+                    return nodeA.data.installed - nodeB.data.installed;
+                }
+            },
+
+            {
+                field: "latest_display",
+                headerName: "Latest",
+                width: 170,
+
+                comparator: (valueA, valueB, nodeA, nodeB) => {
+                    return nodeA.data.latest - nodeB.data.latest;
+                }
+            },
+
+            {
+                field: "status",
+                headerName: "Status",
+                width: 160,
+
+                comparator: (valueA, valueB) => {
+
+                    const order = {
+                        "Update": 0,
+                        "Unknown": 1,
+                        "Current": 2
+                    };
+
+                    return order[valueA.text] - order[valueB.text];
+                },
+
+                cellRenderer: params => {
+
+                    const status = params.value;
+
+                    return `
+                        <span style="
+                            display:inline-block;
+                            min-width:90px;
+                            text-align:center;
+                            padding:4px 10px;
+                            border-radius:999px;
+                            background:${status.color};
+                            color:white;
+                            font-size:12px;
+                            font-weight:600;
+                        ">
+                            ${status.text}
+                        </span>
+                    `;
+                }
+
+            }
+
+        ]
+
+    };
+
+    const gridApi = agGrid.createGrid(
+        document.getElementById("games-grid"),
+        gridOptions
+    );
+
+    document
+        .getElementById("quickFilter")
+        .addEventListener("input", function () {
+
+            gridApi.setGridOption(
+                "quickFilterText",
+                this.value
+            );
+
+        });
+
+}
+
+loadGrid();
+
+</script>
+
+{% endblock %}
