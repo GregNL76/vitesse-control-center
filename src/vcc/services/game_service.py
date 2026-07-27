@@ -1,13 +1,11 @@
-from src.vcc.database import Database
 from src.vcc.repository import Repository
 
 
 class GameService:
 
-    def __init__(self):
+    def __init__(self, repository: Repository):
 
-        self.database = Database("data/vcc.sqlite")
-        self.repository = Repository(self.database)
+        self.repository = repository
 
     @staticmethod
     def format_version(version: int) -> str:

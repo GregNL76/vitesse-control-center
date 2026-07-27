@@ -1,5 +1,6 @@
-from pathlib import Path
 import subprocess
+
+from src.vcc.config import PROJECT_ROOT
 
 
 class GitService:
@@ -7,56 +8,37 @@ class GitService:
     def __init__(self):
 
         # Repository root (vitesse-control-center/)
-        self.repository = Path(__file__).resolve().parents[3]
+        self.repository = PROJECT_ROOT
+
+    def _run_command(self, *args):
+
+        try:
+            result = subprocess.run(
+                ["git", *args],
+                cwd=self.repository,
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+
+            stdout = result.stdout.strip()
+            stderr = result.stderr.strip()
+
+            return stdout, stderr
+
+        except subprocess.CalledProcessError as exc:
+            message = exc.stderr.strip() or exc.stdout.strip()
+            raise RuntimeError(message)
 
     def _run(self, *args):
 
-        try:
-
-            result = subprocess.run(
-                ["git", *args],
-                cwd=self.repository,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-
-            return result.stdout.strip()
-
-        except subprocess.CalledProcessError as exc:
-
-            message = exc.stderr.strip()
-
-            if not message:
-                message = exc.stdout.strip()
-
-            raise RuntimeError(message)
+        stdout, _ = self._run_command(*args)
+        return stdout
 
     def _run_output(self, *args):
 
-        try:
-
-            result = subprocess.run(
-                ["git", *args],
-                cwd=self.repository,
-                capture_output=True,
-                text=True,
-                check=True,
-            )
-
-            output = result.stdout.strip()
-            error = result.stderr.strip()
-
-            return "\n".join(filter(None, [output, error]))
-
-        except subprocess.CalledProcessError as exc:
-
-            message = exc.stderr.strip()
-
-            if not message:
-                message = exc.stdout.strip()
-
-            raise RuntimeError(message)
+        stdout, stderr = self._run_command(*args)
+        return "\n".join(filter(None, [stdout, stderr]))
 
     def commit_and_push(self, message: str) -> str:
 

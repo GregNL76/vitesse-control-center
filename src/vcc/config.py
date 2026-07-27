@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 # -----------------------------------------------------------------------------
@@ -15,7 +16,7 @@ DATABASE_FILE = DATA_DIR / "vcc.sqlite"
 # Nintendo Switch library
 # -----------------------------------------------------------------------------
 
-GAME_FOLDER = Path("T:/")
+GAME_FOLDER = Path(os.environ.get("VCC_GAME_FOLDER", PROJECT_ROOT / "games"))
 
 SUPPORTED_EXTENSIONS = (
     ".nsp",
