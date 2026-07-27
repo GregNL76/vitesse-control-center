@@ -22,4 +22,10 @@ def create_app():
     app.register_blueprint(games_bp)
     app.register_blueprint(git_bp)
 
+    @app.teardown_appcontext
+    def close_database(exception=None):
+        from src.web.routes.dashboard import close_database as dashboard_close_database
+
+        dashboard_close_database(exception)
+
     return app
