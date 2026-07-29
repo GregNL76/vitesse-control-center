@@ -1,4 +1,5 @@
 from src.vcc.repository import Repository
+from src.vcc.url_builder import UrlBuilder
 
 
 class GameService:
@@ -57,7 +58,12 @@ class GameService:
                 "latest": latest,
                 "latest_display": self.format_version(latest),
 
-                "status": self.build_status(installed, latest)
+                "status": self.build_status(installed, latest),
+
+                "external_links": {
+                    "game_page": UrlBuilder.game_page_url(row["name"]),
+                    "search": UrlBuilder.game_search_url(row["name"]),
+                }
 
             })
 

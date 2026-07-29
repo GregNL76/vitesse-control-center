@@ -29,11 +29,11 @@
 
             <div class="sidebar-header">
 
-                <div class="logo">
+                <a href="/" class="logo logo-link">
 
-                    <i class="bi bi-controller"></i>
+                    <img src="{{ url_for('static', filename='img/vcc-logo.svg') }}" alt="Vitesse Control Center logo">
 
-                </div>
+                </a>
 
                 <div>
 
@@ -212,6 +212,8 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    {% block scripts %}{% endblock %}
 
 </body>
 

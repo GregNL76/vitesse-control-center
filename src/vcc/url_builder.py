@@ -1,4 +1,4 @@
-"""
+﻿"""
 URL builder for external game pages.
 """
 
@@ -12,6 +12,7 @@ import unicodedata
 class UrlBuilder:
 
     BASE_URL = "https://nswgame.com"
+    SEARCH_BASE_URL = "https://nswgf.com"
 
     @staticmethod
     def slugify(title: str) -> str:
@@ -71,8 +72,12 @@ class UrlBuilder:
     @classmethod
     def search_url(cls, title: str) -> str:
 
-        return f"{cls.BASE_URL}/?s={quote_plus(title)}"
-    
+        return f"{cls.SEARCH_BASE_URL}/?s={quote_plus(title)}"
+
+    @classmethod
+    def game_search_url(cls, title: str) -> str:
+
+        return cls.search_url(title)
     
     @classmethod
     def game_url(cls, title: str) -> str:
@@ -83,3 +88,8 @@ class UrlBuilder:
             f"{cls.BASE_URL}/"
             f"{slug}-nintendo-switch-nsp-xci-nsz-download-free/"
         )
+
+    @classmethod
+    def game_page_url(cls, title: str) -> str:
+
+        return cls.game_url(title)
