@@ -2,19 +2,19 @@
 Audit task.
 """
 
-from src.vcc.repository import Repository
 from src.vcc.services.update_service import UpdateService
 
 from .base import BaseTask
 
 
 class RunAuditsTask(BaseTask):
+    """
+    Executes all configured auditors.
+    """
 
     def run(self):
 
-        repo = Repository(self.database)
-
-        service = UpdateService(repo)
+        service = UpdateService(self.repository)
 
         report = service.missing_updates()
 

@@ -29,14 +29,22 @@ class BaseTask(ABC):
     Base class for all executable VCC tasks.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, database=None, repository=None):
 
         self.logger = get_logger()
 
-        self.database = Database()
-        self.database.initialize()
+        if database is None:
+            self.database = Database()
+            self.database.initialize()
+            self._owns_database = True
+        else:
+            self.database = database
+            self._owns_database = False
 
-        self.repository = Repository(self.database)
+        if repository is None:
+            self.repository = Repository(self.database)
+        else:
+            self.repository = repository
 
     @property
     def name(self) -> str:
@@ -75,7 +83,8 @@ class BaseTask(ABC):
 
             elapsed = perf_counter() - start
 
-            self.database.close()
+            if self._owns_database:
+                self.database.close()
 
             self.logger.info("")
             self.logger.info(

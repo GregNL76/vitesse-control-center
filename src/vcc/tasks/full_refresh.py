@@ -9,11 +9,23 @@ from .sync_titledb import SyncTitleDBTask
 
 
 class FullRefreshTask(BaseTask):
+    """
+    Executes a complete VCC refresh.
+    """
 
     def run(self):
 
-        ScanLibraryTask().run()
+        ScanLibraryTask(
+            self.database,
+            self.repository,
+        ).run()
 
-        SyncTitleDBTask().run()
+        SyncTitleDBTask(
+            self.database,
+            self.repository,
+        ).run()
 
-        RunAuditsTask().run()
+        RunAuditsTask(
+            self.database,
+            self.repository,
+        ).run()
