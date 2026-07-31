@@ -1,10 +1,11 @@
 """
 VCC Task Framework.
-
-Task classes encapsulate reusable units of work that can be executed
-from the command line, scheduled jobs or the web interface.
 """
 
 from .base import BaseTask
+from .scan_library import ScanLibraryTask
 
-__all__ = ["BaseTask"]
+__all__ = [
+    "BaseTask",
+    "ScanLibraryTask",
+]
