@@ -143,6 +143,7 @@ def main():
         logger.info("")
         logger.info("Scanning library...")
 
+        logger.info("GAME_FOLDER = %s", GAME_FOLDER)
         library = scan(GAME_FOLDER)
 
         database.save_library(library)
@@ -183,9 +184,9 @@ def main():
         logger.info("-----------------------------------")
         logger.info("Titles downloaded : %s", count)
 
-        service = UpdateService(database)
+        service = UpdateService(repo)
 
-        report = service.run()
+        report = service.missing_updates()
         
         logger.info("")
         logger.info("Update Auditor")

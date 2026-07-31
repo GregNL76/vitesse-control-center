@@ -1,3 +1,4 @@
+from src.vcc.auditor.update_auditor import UpdateAuditor
 from src.vcc.repository import Repository
 from src.vcc.url_builder import UrlBuilder
 

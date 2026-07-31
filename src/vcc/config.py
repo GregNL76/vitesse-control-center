@@ -16,7 +16,7 @@ DATABASE_FILE = DATA_DIR / "vcc.sqlite"
 # Nintendo Switch library
 # -----------------------------------------------------------------------------
 
-GAME_FOLDER = Path(os.environ.get("VCC_GAME_FOLDER", PROJECT_ROOT / "games"))
+GAME_FOLDER = Path("/volume1/web/games")
 
 SUPPORTED_EXTENSIONS = (
     ".nsp",

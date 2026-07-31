@@ -362,6 +362,35 @@ class Repository:
 
     # -------------------------------------------------------------
 
+    def duplicate_update_files(self):
+
+        cursor = self.database.connection.execute(
+            """
+            SELECT
+                *
+            FROM games
+            WHERE file_type='UPDATE'
+                AND (name, title_id, version) IN (
+                    SELECT
+                        name,
+                        title_id,
+                        version
+                    FROM games
+                    WHERE file_type='UPDATE'
+                    GROUP BY
+                        name,
+                        title_id,
+                        version
+                    HAVING COUNT(*) > 1
+                )
+            ORDER BY name, title_id, version
+            """
+        )
+
+        return cursor.fetchall()
+
+    # -------------------------------------------------------------
+
     def total_storage(self) -> int:
 
         cursor = self.database.connection.execute(
