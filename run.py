@@ -41,23 +41,6 @@ def print_library_summary(logger, library):
     logger.info("Duplicate updates  : %s", summary["duplicate_updates"])
     logger.info("Health score       : %s%%", summary["health"])
 
-
-def print_first_games(logger, library):
-
-    logger.info("")
-    logger.info("First 10 games")
-    logger.info("-----------------------------------")
-
-    for game in library.all_games()[:10]:
-
-        logger.info(
-            "%-40s  v%-8s  %s",
-            game.name,
-            game.installed_version,
-            game.status,
-        )
-
-
 def print_repository_stats(logger, repo: Repository):
 
     logger.info("")
@@ -163,8 +146,6 @@ def main():
 
         print_library_summary(logger, library)
 
-        print_first_games(logger, library)
-
         print_repository_stats(logger, repo)
 
         print_orphan_updates(logger, repo)
@@ -172,10 +153,6 @@ def main():
         print_duplicate_updates(logger, repo)
 
         print_largest_games(logger, repo)
-
-        logger.info("")
-        logger.info("Downloading Tinfoil database")
-        logger.info("-----------------------------------")
 
         count = SyncService(database).run()
 
