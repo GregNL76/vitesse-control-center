@@ -2,7 +2,7 @@
 TitleDB synchronization task.
 """
 
-from src.vcc.services.titledb_service import TitleDbService
+from src.vcc.workflows import SyncTitleDbWorkflow
 
 from .base import BaseTask
 
@@ -14,7 +14,7 @@ class SyncTitleDBTask(BaseTask):
 
     def run(self):
 
-        return TitleDbService(
+        return SyncTitleDbWorkflow(
             self.database,
             self.logger,
         ).run()

@@ -2,7 +2,7 @@
 Audit task.
 """
 
-from src.vcc.services.audit_service import AuditService
+from src.vcc.workflows import RunAuditsWorkflow
 
 from .base import BaseTask
 
@@ -14,7 +14,7 @@ class RunAuditsTask(BaseTask):
 
     def run(self):
 
-        return AuditService(
+        return RunAuditsWorkflow(
             self.repository,
             self.logger,
         ).run()

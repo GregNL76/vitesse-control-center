@@ -2,7 +2,7 @@
 Library scan task.
 """
 
-from src.vcc.services.scan_service import ScanService
+from src.vcc.workflows import ScanLibraryWorkflow
 
 from .base import BaseTask
 
@@ -14,7 +14,7 @@ class ScanLibraryTask(BaseTask):
 
     def run(self):
 
-        return ScanService(
+        return ScanLibraryWorkflow(
             self.database,
             self.repository,
             self.logger,
