@@ -2,20 +2,19 @@
 TitleDB synchronization task.
 """
 
-from src.vcc.services.sync_service import SyncService
+from src.vcc.services.titledb_service import TitleDbService
 
 from .base import BaseTask
 
 
 class SyncTitleDBTask(BaseTask):
+    """
+    Executes the TitleDB synchronization task.
+    """
 
     def run(self):
 
-        count = SyncService(self.database).run()
-
-        self.logger.info("")
-        self.logger.info("Tinfoil")
-        self.logger.info("-----------------------------------")
-        self.logger.info("Titles downloaded : %s", count)
-
-        return count
+        return TitleDbService(
+            self.database,
+            self.logger,
+        ).run()
