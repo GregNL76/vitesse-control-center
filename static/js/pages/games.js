@@ -1,67 +1,67 @@
 async function loadGrid() {
 
-        const response = await fetch("/api/games");
-        const data = await response.json();
+    const response = await fetch("/api/games");
+    const data = await response.json();
 
-        const gridOptions = {
-			theme: "legacy",
-            rowData: data,
+    const gridOptions = {
+        theme: "legacy",
+        rowData: data,
 
-            defaultColDef: {
-                sortable: true,
-                filter: true,
-                resizable: true
+        defaultColDef: {
+            sortable: true,
+            filter: true,
+            resizable: true
+        },
+
+        columnDefs: [
+
+            {
+                field: "name",
+                headerName: "Game",
+                flex: 3
             },
 
-            columnDefs: [
+            {
+                field: "installed_display",
+                headerName: "Installed",
+                width: 170,
 
-                {
-                    field: "name",
-                    headerName: "Game",
-                    flex: 3
+                comparator: (valueA, valueB, nodeA, nodeB) => {
+                    return nodeA.data.installed - nodeB.data.installed;
+                }
+            },
+
+            {
+                field: "latest_display",
+                headerName: "Latest",
+                width: 170,
+
+                comparator: (valueA, valueB, nodeA, nodeB) => {
+                    return nodeA.data.latest - nodeB.data.latest;
+                }
+            },
+
+            {
+                field: "status",
+                headerName: "Status",
+                width: 160,
+
+                comparator: (valueA, valueB) => {
+
+                    const order = {
+                        "Update": 0,
+                        "Unknown": 1,
+                        "Current": 2
+                    };
+
+                    return order[valueA.text] - order[valueB.text];
                 },
 
-                {
-                    field: "installed_display",
-                    headerName: "Installed",
-                    width: 170,
+                cellRenderer: params => {
 
-                    comparator: (valueA, valueB, nodeA, nodeB) => {
-                        return nodeA.data.installed - nodeB.data.installed;
-                    }
-                },
+                    const status = params.value;
 
-                {
-                    field: "latest_display",
-                    headerName: "Latest",
-                    width: 170,
-
-                    comparator: (valueA, valueB, nodeA, nodeB) => {
-                        return nodeA.data.latest - nodeB.data.latest;
-                    }
-                },
-
-                {
-                    field: "status",
-                    headerName: "Status",
-                    width: 160,
-
-                    comparator: (valueA, valueB) => {
-
-                        const order = {
-                            "Update": 0,
-                            "Unknown": 1,
-                            "Current": 2
-                        };
-
-                        return order[valueA.text] - order[valueB.text];
-                    },
-
-                    cellRenderer: params => {
-
-                        const status = params.value;
-
-                        return `
+                    return `
                         <span style="
                             display:inline-flex;
                             align-items:center;
@@ -80,161 +80,54 @@ async function loadGrid() {
                             ${status.text}
                         </span>
                     `;
-                    }
-
-                },
-                {
-                    headerName: "🔗",
-                    width: 50,
-                    cellRenderer: params => {
-                        const links = params.data.external_links;
-
-                        // create cell wrapper and button only; the popup menu will be appended
-                        // to AG Grid's popup parent (or document.body) so it escapes clipping
-                        const dropdownWrapper = document.createElement('div');
-                        dropdownWrapper.className = 'dropdown';
-                        dropdownWrapper.setAttribute('data-game-popup', '1');
-                        dropdownWrapper.style.position = 'relative';
-						dropdownWrapper.style.display = 'flex';
-						dropdownWrapper.style.justifyContent = 'center';
-						dropdownWrapper.style.alignItems = 'center';
-
-                        const button = document.createElement('button');
-                        button.type = 'button';
-                        button.className = 'btn btn-sm border-0 bg-transparent p-0';
-                        button.textContent = '🔗';
-
-                        // helper to create popup menu DOM (not attached yet)
-                        function buildMenu() {
-                            const ul = document.createElement('ul');
-                            ul.className = 'dropdown-menu dropdown-menu-end d-flex align-items-center';
-                            ul.style.position = 'absolute';
-                            ul.style.minWidth = '0';
-							ul.style.gap = '2px';
-                            ul.style.zIndex = '2000';
-							ul.style.minWidth = 'unset';
-							ul.style.width = 'fit-content';
-							ul.style.padding = '2px';
-
-                            const li1 = document.createElement('li');
-                            li1.innerHTML = `
-                                <a class="dropdown-item" href="${links.game_page}" target="_blank" rel="noopener noreferrer">
-                                    🌐
-                                </a>
-                            `;
-
-                            const li2 = document.createElement('li');
-                            li2.innerHTML = `
-                                <a class="dropdown-item" href="${links.search}" target="_blank" rel="noopener noreferrer">
-                                    🔍
-                                </a>
-                            `;
-
-                            ul.appendChild(li1);
-                            ul.appendChild(li2);
-
-                            // stop propagation on interactions inside popup
-                            ul.addEventListener('mousedown', e => e.stopPropagation());
-                            ul.addEventListener('click', e => e.stopPropagation());
-
-                            return ul;
-                        }
-
-                        // store current popup element reference on wrapper
-                        dropdownWrapper._popup = null;
-
-                        // show popup appended to AG Grid popup parent (or document.body)
-                        function showPopup() {
-                            if (dropdownWrapper._popup) return;
-                            const popupParent = (params && params.api && typeof params.api.getPopupParent === 'function')
-                                ? params.api.getPopupParent()
-                                : document.body;
-
-                            const menuEl = buildMenu();
-
-                            popupParent.appendChild(menuEl);
-
-                            // position menu relative to button on screen
-                            const btnRect = button.getBoundingClientRect();
-                            const parentRect = popupParent.getBoundingClientRect ? popupParent.getBoundingClientRect() : { left: 0, top: 0 };
-
-                            // compute absolute position within popupParent
-                            const left = btnRect.right - parentRect.left - menuEl.offsetWidth;
-                            const top = btnRect.bottom - parentRect.top + 1;
-
-                            menuEl.style.left = Math.max(0, left) + 'px';
-                            menuEl.style.top = Math.max(0, top) + 'px';
-
-                            // Use Bootstrap semantics to show the dropdown
-                            menuEl.classList.add('show');
-
-                            dropdownWrapper._popup = menuEl;
-                        }
-
-                        function hidePopup() {
-                            if (!dropdownWrapper._popup) return;
-                            const el = dropdownWrapper._popup;
-                            // remove Bootstrap show class before removing from DOM
-                            try { el.classList.remove('show'); } catch (e) { }
-                            if (el.parentNode) el.parentNode.removeChild(el);
-                            dropdownWrapper._popup = null;
-                        }
-
-                        // toggle on click
-                        button.addEventListener('click', event => {
-                            event.stopPropagation();
-                            if (dropdownWrapper._popup) {
-                                hidePopup();
-                            } else {
-                                // ensure other popups are closed first
-                                closeAllGameDropdowns();
-                                showPopup();
-                            }
-                        });
-
-                        // expose close function used by global closer
-                        dropdownWrapper.closeDropdown = hidePopup;
-
-                        dropdownWrapper.appendChild(button);
-
-                        return dropdownWrapper;
-                    },
-                    suppressMovable: true,
-                    suppressSizeToFit: true,
-                    sortable: false,
-                    filter: false
                 }
+            },
 
-            ]
+            {
+                headerName: "Links",
+                width: 150,
 
-        };
+                cellRenderer: params => {
 
-        const gridApi = agGrid.createGrid(
-            document.getElementById("games-grid"),
-            gridOptions
-        );
+                    const links = params.data.external_links;
 
-        document
-            .getElementById("quickFilter")
-            .addEventListener("input", function () {
+                    return `
+                        <a class="btn btn-sm btn-outline-secondary"
+                           href="${links.game_page}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Open
+                        </a>
 
-                gridApi.setQuickFilter(this.value);
+                        <a class="btn btn-sm btn-outline-secondary"
+                           href="${links.search}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Search
+                        </a>
+                    `;
+                },
 
-            });
-
-        document.addEventListener('click', event => {
-            closeAllGameDropdowns();
-        });
-
-    }
-
-    function closeAllGameDropdowns() {
-        const dropdowns = document.querySelectorAll('[data-game-popup]');
-        dropdowns.forEach(dropdown => {
-            if (dropdown.closeDropdown) {
-                dropdown.closeDropdown();
+                sortable: false,
+                filter: false
             }
-        });
-    }
 
-    window.addEventListener('load', loadGrid);
+        ]
+
+    };
+
+    const gridApi = agGrid.createGrid(
+        document.getElementById("games-grid"),
+        gridOptions
+    );
+
+    document
+        .getElementById("quickFilter")
+        .addEventListener("input", function () {
+
+            gridApi.setQuickFilter(this.value);
+
+        });
+
+}
+window.addEventListener("load", loadGrid);
