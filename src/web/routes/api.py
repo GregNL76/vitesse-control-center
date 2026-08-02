@@ -30,7 +30,7 @@ def get_repository():
 @api_bp.route("/games")
 def games():
     return jsonify(
-        GameService(get_repository()).games()
+        GameService(get_database()).games_api()
     )
 
 

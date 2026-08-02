@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>
+
+        {% block title %}
+            Vitesse Control Center
+        {% endblock %}
+
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/dashboard.css') }}">
+
+    {% block head %}
+    {% endblock %}
+
+</head>
+
+<body>
+
+    <header class="header">
+
+        <div class="header-left">
+
+            <h1>
+
+                Vitesse Control Center
+
+            </h1>
+
+        </div>
+
+        <div class="header-right">
+
+            <span class="version">
+
+                v2.0
+
+            </span>
+
+        </div>
+
+    </header>
+
+
+    <nav class="navigation">
+
+        <ul>
+
+            <li>
+
+                <a href="/">
+
+                    Dashboard
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="/library">
+
+                    Library
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="/updates">
+
+                    Updates
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="/reports">
+
+                    Reports
+
+                </a>
+
+            </li>
+
+            <li>
+
+                <a href="/settings">
+
+                    Settings
+
+                </a>
+
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+    <main class="content">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+
+    <footer class="footer">
+
+        <div>
+
+            Vitesse Control Center
+
+        </div>
+
+        <div>
+
+            Nintendo Switch Library Manager
+
+        </div>
+
+    </footer>
+
+
+    {% block scripts %}
+    {% endblock %}
+
+</body>
+
+</html>

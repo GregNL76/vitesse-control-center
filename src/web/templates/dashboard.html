@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}
+Dashboard 2.0 - Vitesse Control Center
+{% endblock %}
+
+{% block page_title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<div class="mb-4">
+    <h2 class="h4 text-white mb-3">Statistics</h2>
+    <div class="stats-grid">
+
+        <div class="stats-card">
+
+			<div class="card h-100">
+
+
+                <div class="card-body">
+
+                    <div class="card-value">
+
+                        {{ stats.games }}
+
+                    </div>
+
+                    <h5 class="card-title">
+
+                        Games
+
+                    </h5>
+
+                    <div class="card-subtitle">
+
+                        Available games
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="stats-card">
+
+			<div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="card-value">
+
+                        {{ stats.updates }}
+
+                    </div>
+
+                    <h5 class="card-title">
+
+                        Updates
+
+                    </h5>
+
+                    <div class="card-subtitle">
+
+                        Available updates
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="stats-card">
+
+			<div class="card h-100">
+
+				<div class="card-body">
+
+					<div class="card-value">
+
+						{{ stats.missing_updates }}
+
+					</div>
+
+					<h5 class="card-title">
+
+						Missing updates
+
+					</h5>
+
+					<div class="card-subtitle">
+
+						There's work to be done here!
+
+					</div>
+
+				</div>
+
+			</div>
+
+		</div>
+
+        <div class="stats-card">
+
+			<div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="card-value">
+
+                        {{ stats.orphan_updates }}
+
+                    </div>
+
+                    <h5 class="card-title">
+
+                        Orphan Updates
+
+                    </h5>
+
+                    <div class="card-subtitle">
+
+                        Updates without a base game
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="stats-card">
+
+			<div class="card h-100">
+
+                <div class="card-body">
+
+                    <div class="card-value">
+
+                        {{ stats.duplicate_updates }}
+
+                    </div>
+
+                    <h5 class="card-title">
+
+                        Duplicate Updates
+
+                    </h5>
+
+                    <div class="card-subtitle">
+
+                        Duplicate update packages
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="row mt-4">
+
+        <div class="col-lg-8">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    Actions
+
+                </div>
+
+                <div class="card-body">
+
+                    <form action="/refresh-titledb" method="post" class="d-inline">
+
+                        <button class="btn btn-primary">
+
+                            <i class="bi bi-arrow-repeat"></i>
+
+                            Refresh TitleDB
+
+                        </button>
+
+                    </form>
+
+                    <button class="btn btn-outline-secondary ms-2" disabled>
+
+                        <i class="bi bi-search"></i>
+
+                        Run Update Auditor
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    Status
+
+                </div>
+
+                <div class="card-body">
+
+                    <p>
+
+                        <span class="badge bg-success">
+
+                            ONLINE
+
+                        </span>
+
+                    </p>
+
+                    <p class="mb-1">
+
+                        Repository connected
+
+                    </p>
+
+                    <p class="mb-0">
+
+                        Database available
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Missing Updates{% endblock %}
+
+{% block content %}
+
+<h1>Missing Updates</h1>
+
+<div style="margin-bottom:15px;">
+    <input id="quickFilter" type="text" placeholder="Zoek game..." style="
+            width:350px;
+            padding:10px;
+            border-radius:6px;
+            border:1px solid #444;
+            background:#1b1f27;
+            color:white;
+        ">
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@36.0.2/styles/ag-grid.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ag-grid-community@36.0.2/styles/ag-theme-quartz.css">
+
+<div id="games-grid" class="ag-theme-quartz-dark" style="height:700px;width:100%;"></div>
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="https://cdn.jsdelivr.net/npm/ag-grid-community@36.0.2/dist/ag-grid-community.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/pages/missing_updates.js') }}"></script>
+
+{{ super() }}
+
+{% endblock %}
