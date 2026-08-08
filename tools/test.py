@@ -1,25 +1,18 @@
-from pathlib import Path
-import sys
-
-PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(PROJECT_ROOT))
-
 from src.vcc.database import Database
-from src.vcc.services.dashboard_service import DashboardService
 
 db = Database()
-db.initialize()
 
-dashboard = DashboardService(db)
+title_id = "0100544020572800"
 
-data = dashboard.overview()
+print("Game:")
+print(db.games.by_title_id(title_id))
 
-print(data.keys())
 print()
 
-print("Statistics")
-print(data["statistics"])
+print("Tinfoil:")
+print(db.tinfoil.get(title_id))
+
 print()
 
-print("Largest games :", len(data["largest_games"]))
-print("Missing updates:", len(data["missing_updates"]))
+print("Latest:")
+print(db.tinfoil.latest_version(title_id))

@@ -19,19 +19,18 @@ async function loadGrid() {
                 flex: 3
             },
             {
+                field: "title_id",
+                headerName: "Title ID",
+                width: 160
+            },            {
                 field: "installed",
                 headerName: "Installed",
-                width: 170
+                width: 100
             },
             {
                 field: "latest",
                 headerName: "Latest",
-                width: 170
-            },
-            {
-                field: "title_id",
-                headerName: "Title ID",
-                width: 180
+                width: 100
             },
             {
                 headerName: "Links",
@@ -43,8 +42,13 @@ async function loadGrid() {
                         <a class="btn btn-sm btn-outline-secondary" href="${links.url}" target="_blank">
                             Open
                         </a>
+
                         <a class="btn btn-sm btn-outline-secondary" href="${links.search_url}" target="_blank">
-                            Search
+                            S1
+                        </a>
+
+                        <a class="btn btn-sm btn-outline-secondary" href="${links.search2_url}" target="_blank">
+                            S2
                         </a>
                     `;
                 },

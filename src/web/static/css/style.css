@@ -321,7 +321,7 @@ a {
     color: var(--muted);
 
     font-size: 14px;
-
+    margin-top: 4px;
 }
 
 /* ------------------------------------------------ */
@@ -432,11 +432,7 @@ a {
     display: grid;
 
     grid-template-columns:
-        150px
-        150px
-        1fr
-        1fr
-        1fr;
+        150px 150px 1fr 1fr 1fr;
 
     gap: 20px;
 

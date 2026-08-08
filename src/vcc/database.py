@@ -15,7 +15,7 @@ from .library import Library
 from src.vcc.db.tinfoil import TinfoilRepository
 from src.vcc.db.queries import DatabaseQueries
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 
 
 class Database:
@@ -117,6 +117,8 @@ class Database:
 
                 version         INTEGER NOT NULL,
 
+                media_version   INTEGER,
+
                 synced_at       TEXT NOT NULL
             )
             """
@@ -128,6 +130,14 @@ class Database:
             ON tinfoil_titles(title_id)
             """
         )
+
+        # Add the Tinfoil.media version column to existing databases.
+        cursor.execute("PRAGMA table_info(tinfoil_titles)")
+        tinfoil_columns = {row[1] for row in cursor.fetchall()}
+        if "media_version" not in tinfoil_columns:
+            cursor.execute(
+                "ALTER TABLE tinfoil_titles ADD COLUMN media_version INTEGER"
+            )
 
         cursor.execute(
             """

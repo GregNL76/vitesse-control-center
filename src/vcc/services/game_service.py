@@ -122,13 +122,16 @@ class GameService:
                 "categories": game.categories,
 
                 "external_links": {
-
                     "game_page":
-                        f"https://tinfoil.io/Title/{game.title_id}",
+                        "https://nswgf.com/"
+                        + self._nswgf_slug(game.name)
+                        + "-nintendo-switch-nsp-xci-nsz-download-free/",
 
                     "search":
-                        f"https://www.google.com/search?q={game.name}"
+                        f"https://nswgf.com/?s={game.name}",
 
+                    "search2":
+                        f"https://romslab.com/?s={game.name}&post_type=post"
                 }
 
             })
@@ -189,7 +192,59 @@ class GameService:
 
         return stats
 
-    # -----------------------------------------------------------------
+            # -----------------------------------------------------------------
+
+    def duplicate_updates(self):
+
+        result = []
+
+        duplicates = self.database.queries.duplicate_updates()
+
+        for row in duplicates:
+
+            updates = list(
+                self.database.queries.updates_for_title(
+                    row["title_id"]
+                )
+            )
+
+            keep = dict(updates[0])
+
+            obsolete = [
+                dict(update)
+                for update in updates[1:]
+            ]
+
+            result.append(
+                {
+
+                    "title_id": row["title_id"],
+
+                    "name": row["name"],
+
+                    "update_count": row["update_count"],
+
+                    "latest_version": row["latest_version"],
+
+                    "installed_version": keep["version"],
+
+                    "keep": keep,
+
+                    "obsolete": obsolete,
+
+                    "obsolete_count": len(obsolete),
+
+                    "space_to_free": sum(
+                        item["size"]
+                        for item in obsolete
+                    ),
+
+                }
+            )
+
+        return result
+        
+        # -----------------------------------------------------------------
 
     def publishers(self):
 
@@ -218,3 +273,20 @@ class GameService:
         """
 
         return self.database.queries.languages()
+        
+    # -----------------------------------------------------------------
+
+    @staticmethod
+    def _nswgf_slug(name: str) -> str:
+
+        slug = name.lower()
+
+        slug = slug.replace("&", "and")
+
+        import re
+
+        slug = re.sub(r"[^a-z0-9]+", "-", slug)
+
+        slug = slug.strip("-")
+
+        return slug        

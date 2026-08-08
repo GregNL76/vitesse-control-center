@@ -39,6 +39,7 @@ class TinfoilRepository:
                 (
                     item["title_id"],
                     item["version"],
+                    item.get("media_version"),
                     item["synced_at"],
                 )
             )
@@ -49,12 +50,40 @@ class TinfoilRepository:
             (
                 title_id,
                 version,
+                media_version,
                 synced_at
             )
             VALUES
             (
-                ?, ?, ?
+                ?, ?, ?, ?
             )
+            """,
+            rows,
+        )
+
+        self.connection.commit()
+
+    # ---------------------------------------------------------
+
+    def save_media_versions(self, versions: dict):
+
+        """Store versions discovered from Tinfoil.media."""
+
+        rows = [
+            (version, title_id.upper())
+            for title_id, version in versions.items()
+            if version is not None
+        ]
+
+        if not rows:
+            self.connection.commit()
+            return
+
+        self.connection.executemany(
+            """
+            UPDATE tinfoil_titles
+            SET media_version = ?
+            WHERE title_id = ?
             """,
             rows,
         )
@@ -67,7 +96,8 @@ class TinfoilRepository:
 
         cursor = self.connection.execute(
             """
-            SELECT version
+            SELECT
+                MAX(version, COALESCE(media_version, 0)) AS version
 
             FROM tinfoil_titles
 

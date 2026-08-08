@@ -42,6 +42,7 @@ class UpdateAuditor:
                         "latest": latest,
                         "url": UrlBuilder.game_url(game["name"]),
                         "search_url": UrlBuilder.search_url(game["name"]),
+                        "search2_url": UrlBuilder.search2_url(game["name"]),
                     }
                 )
 

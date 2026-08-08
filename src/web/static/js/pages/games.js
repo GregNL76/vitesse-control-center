@@ -21,10 +21,16 @@ async function loadGrid() {
                 flex: 3
             },
 
+			{
+				field: "title_id",
+				headerName: "Title ID",
+				width: 160
+			},
+
             {
                 field: "installed_display",
                 headerName: "Installed",
-                width: 170,
+                width: 100,
 
                 comparator: (valueA, valueB, nodeA, nodeB) => {
                     return nodeA.data.installed - nodeB.data.installed;
@@ -34,7 +40,7 @@ async function loadGrid() {
             {
                 field: "latest_display",
                 headerName: "Latest",
-                width: 170,
+                width: 100,
 
                 comparator: (valueA, valueB, nodeA, nodeB) => {
                     return nodeA.data.latest - nodeB.data.latest;
@@ -44,7 +50,7 @@ async function loadGrid() {
             {
                 field: "status",
                 headerName: "Status",
-                width: 160,
+                width: 110,
 
                 comparator: (valueA, valueB) => {
 
@@ -92,20 +98,27 @@ async function loadGrid() {
                     const links = params.data.external_links;
 
                     return `
-                        <a class="btn btn-sm btn-outline-secondary"
-                           href="${links.game_page}"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            Open
-                        </a>
+                    <a class="btn btn-sm btn-outline-secondary"
+                       href="${links.game_page}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Open
+                    </a>
 
-                        <a class="btn btn-sm btn-outline-secondary"
-                           href="${links.search}"
-                           target="_blank"
-                           rel="noopener noreferrer">
-                            Search
-                        </a>
-                    `;
+                    <a class="btn btn-sm btn-outline-secondary"
+                       href="${links.search}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        S1
+                    </a>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       href="${links.search2}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        S2
+                    </a>
+                `;
                 },
 
                 sortable: false,

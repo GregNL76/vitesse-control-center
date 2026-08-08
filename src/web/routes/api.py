@@ -50,6 +50,7 @@ def orphan_updates():
 
 @api_bp.route("/duplicate-updates")
 def duplicate_updates():
+
     return jsonify(
-        UpdateService(get_repository()).duplicate_updates()
+        GameService(get_database()).duplicate_updates()
     )

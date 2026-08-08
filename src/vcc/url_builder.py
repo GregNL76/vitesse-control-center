@@ -68,15 +68,16 @@ class UrlBuilder:
 
         return slug.strip("-")
 
-    
     @classmethod
     def search_url(cls, title: str) -> str:
-
         return f"{cls.SEARCH_BASE_URL}/?s={quote_plus(title)}"
 
     @classmethod
-    def game_search_url(cls, title: str) -> str:
+    def search2_url(cls, title: str) -> str:
+        return f"https://romslab.com/?s={quote_plus(title)}&post_type=post"
 
+    @classmethod
+    def game_search_url(cls, title: str) -> str:
         return cls.search_url(title)
     
     @classmethod

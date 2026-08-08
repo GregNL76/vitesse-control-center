@@ -12,4 +12,6 @@ reports/
 logs/
 
 # SQLite (optioneel)
-data/vcc.sqlite
+data/*.sqlite
+data/*.sqlite.old
+data/*.db

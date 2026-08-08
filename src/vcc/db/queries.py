@@ -274,39 +274,54 @@ class DatabaseQueries:
     # -------------------------------------------------------------
 
     def duplicate_updates(self):
-
         cursor = self.connection.connection.execute(
             """
             SELECT
-
-                name,
-
-                title_id,
-
-                version,
-
-                COUNT(*) AS duplicates
-
-            FROM games
-
-            WHERE file_type='UPDATE'
-
-            GROUP BY
-
-                name,
-
-                title_id,
-
-                version
-
+                g.title_id,
+                MAX(g.name) AS name,
+                COUNT(*) AS update_count,
+                MAX(g.version) AS latest_version
+            FROM games g
+            WHERE g.file_type = 'UPDATE'
+            GROUP BY g.title_id
             HAVING COUNT(*) > 1
-
-            ORDER BY name
+            ORDER BY name COLLATE NOCASE
             """
         )
 
         return cursor.fetchall()
 
+        # -----------------------------------------------------------------
+
+    def updates_for_title(self, title_id):
+
+        cursor = self.connection.connection.cursor()
+
+        cursor.execute(
+            """
+            SELECT
+
+                id,
+                title_id,
+                filename,
+                full_path,
+                version,
+                size
+
+            FROM games
+
+            WHERE
+                title_id = ?
+                AND file_type = 'UPDATE'
+
+            ORDER BY
+                version DESC
+            """,
+            (title_id,),
+        )
+
+        return cursor.fetchall()
+        
     # -------------------------------------------------------------
 
     def duplicate_update_files(self):

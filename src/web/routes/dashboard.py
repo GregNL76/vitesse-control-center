@@ -4,6 +4,7 @@ from src.vcc.database import Database
 from src.vcc.repository import Repository
 from src.vcc.services.dashboard_service import DashboardService
 from src.vcc.services.sync_service import SyncService
+from src.vcc.tasks import FullRefreshTask
 
 dashboard_bp = Blueprint(
     "dashboard",
@@ -92,6 +93,7 @@ def close_database(error=None):
         database.close()
 
 
+
 # ---------------------------------------------------------------------
 # Dashboard
 # ---------------------------------------------------------------------
@@ -126,12 +128,15 @@ def index():
 )
 def refresh_titledb():
 
-    result = get_sync_service().run()
+    FullRefreshTask().execute()
 
     return render_template(
 
         "refresh.html",
 
-        result=result,
+        result={
+            "success": True,
+            "message": "Library refresh completed.",
+        },
 
     )
