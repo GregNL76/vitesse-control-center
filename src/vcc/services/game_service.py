@@ -168,6 +168,33 @@ class GameService:
 
     # -----------------------------------------------------------------
 
+    def dlcs(self):
+        """
+        Return all installed DLC files.
+        """
+
+        rows = self.database.queries.dlcs()
+
+        result = []
+
+        for row in rows:
+            item = dict(row)
+
+            size = item.get("size", 0)
+
+            if size >= 1024 ** 3:
+                item["size_display"] = f"{size / (1024 ** 3):.2f} GB"
+            elif size >= 1024 ** 2:
+                item["size_display"] = f"{size / (1024 ** 2):.2f} MB"
+            else:
+                item["size_display"] = f"{size / 1024:.0f} KB"
+
+            result.append(item)
+
+        return result
+        
+    # -----------------------------------------------------------------
+        
     def largest_games(self, limit: int = 10):
 
         """

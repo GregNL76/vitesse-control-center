@@ -181,25 +181,23 @@ Dashboard
 
                 <div class="card-body">
 
-                    <form action="/refresh-library" method="post" class="d-inline">
+					<form id="refresh-form" action="/refresh-titledb" method="post" class="d-inline">
 
-                        <button class="btn btn-primary">
+						<button
+							id="refresh-button"
+							class="btn btn-primary">
+							<i class="bi bi-arrow-repeat"></i>
+							Refresh Library
+						</button>
 
-                            <i class="bi bi-arrow-repeat"></i>
+					</form>
 
-                            Refresh Library
-
-                        </button>
-
-                    </form>
-
-                    <button class="btn btn-outline-secondary ms-2" disabled>
-
-                        <i class="bi bi-search"></i>
-
-                        Run Update Auditor
-
-                    </button>
+					<button
+						id="auditor-button"
+						class="btn btn-outline-secondary ms-2">
+						<i class="bi bi-search"></i>
+						Run Update Auditor
+					</button>
 
                 </div>
 
@@ -248,5 +246,78 @@ Dashboard
         </div>
 
     </div>
+
+
+		<script>
+		document.getElementById("refresh-form").addEventListener("submit", async function(event) {
+			event.preventDefault();
+
+			const button = document.getElementById("refresh-button");
+
+			button.disabled = true;
+			button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refreshing...';
+
+			try {
+				const response = await fetch("/refresh-titledb", {
+					method: "POST"
+				});
+
+				if (!response.ok) {
+					throw new Error("Refresh failed");
+				}
+
+				button.innerHTML = '<i class="bi bi-check-lg"></i> Refreshed';
+
+				setTimeout(() => {
+					button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refresh Library';
+					button.disabled = false;
+				}, 2000);
+
+			} catch (error) {
+				button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';
+
+				setTimeout(() => {
+					button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refresh Library';
+					button.disabled = false;
+				}, 3000);
+			}
+		});
+		</script>
+
+
+		<script>
+		document.getElementById("auditor-button").addEventListener("click", async function() {
+
+			const button = this;
+
+			button.disabled = true;
+			button.innerHTML = '<i class="bi bi-search"></i> Running...';
+
+			try {
+				const response = await fetch("/api/tasks/run-audits", {
+					method: "POST"
+				});
+
+				if (!response.ok) {
+					throw new Error("Auditor failed");
+				}
+
+				button.innerHTML = '<i class="bi bi-check-lg"></i> Audited';
+
+				setTimeout(() => {
+					window.location.href = "/missing-updates";
+				}, 500);
+
+			} catch (error) {
+
+				button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';
+
+				setTimeout(() => {
+					button.innerHTML = '<i class="bi bi-search"></i> Run Update Auditor';
+					button.disabled = false;
+				}, 3000);
+			}
+		});
+		</script>
 
     {% endblock %}

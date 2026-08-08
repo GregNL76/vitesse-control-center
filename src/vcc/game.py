@@ -5,11 +5,9 @@ Represents one Nintendo Switch title.
 """
 
 from __future__ import annotations
-
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
-
 
 class GameFile:
     """
@@ -39,6 +37,7 @@ class GameFile:
         self.version = version
 
         self.file_type = file_type.upper()
+
 
         if self.path.exists():
 
@@ -110,6 +109,8 @@ class Game:
         self.base: Optional[GameFile] = None
 
         self.updates: List[GameFile] = []
+        
+        self.dlcs: List[GameFile] = []
 
         self.latest_available_version = 0
 
@@ -127,6 +128,10 @@ class Game:
 
         return len(self.updates) > 0
 
+    @property
+    def has_dlc(self):
+        return len(self.dlcs) > 0
+    
     # ----------------------------------------------------------
 
     @property
@@ -162,7 +167,11 @@ class Game:
     @property
     def total_files(self):
 
-        return int(self.has_base) + len(self.updates)
+        return (
+        int(self.has_base)
+        + len(self.updates)
+        + len(self.dlcs)
+    )
 
     # ----------------------------------------------------------
 
@@ -175,6 +184,7 @@ class Game:
             total += self.base.size
 
         total += sum(update.size for update in self.updates)
+        total += sum(dlc.size for dlc in self.dlcs)
 
         return total
 
@@ -198,18 +208,24 @@ class Game:
     def add_file(self, game_file: GameFile):
 
         if game_file.file_type == "BASE":
-
             self.base = game_file
-
             return
 
         if game_file.file_type == "UPDATE":
-
             self.updates.append(game_file)
 
             self.updates.sort(
                 key=lambda item: item.version,
                 reverse=True
+            )
+
+            return
+
+        if game_file.file_type == "DLC":
+            self.dlcs.append(game_file)
+
+            self.dlcs.sort(
+                key=lambda item: item.filename.lower()
             )
 
     # ----------------------------------------------------------
@@ -221,5 +237,6 @@ class Game:
             f"{self.name} "
             f"base={self.has_base} "
             f"updates={len(self.updates)} "
+            f"dlcs={len(self.dlcs)} "
             f"installed={self.installed_version}>"
         )

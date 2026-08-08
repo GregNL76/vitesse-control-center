@@ -17,16 +17,13 @@ VERSION_RE = re.compile(r"\[v(\d+)\]")
 
 
 def detect_type(title_id: str) -> str:
-    """
-    Determine whether this file is a BASE game or UPDATE.
-
-    Update TitleIDs always end with 800.
-    """
-
     if title_id.endswith("800"):
         return "UPDATE"
 
-    return "BASE"
+    if title_id.endswith("000"):
+        return "BASE"
+
+    return "DLC"
 
 
 def parse_file(path: Path):

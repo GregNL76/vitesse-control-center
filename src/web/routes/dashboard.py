@@ -130,13 +130,4 @@ def refresh_titledb():
 
     FullRefreshTask().execute()
 
-    return render_template(
-
-        "refresh.html",
-
-        result={
-            "success": True,
-            "message": "Library refresh completed.",
-        },
-
-    )
+    return "", 204

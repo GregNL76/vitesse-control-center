@@ -71,6 +71,41 @@ class DatabaseQueries:
 
     # -------------------------------------------------------------
 
+    def dlcs(self):
+        
+        cursor = self.connection.connection.execute(
+            """
+            SELECT
+                title_id,
+                name,
+                version,
+                filename,
+                size,
+                full_path
+            FROM games
+            WHERE file_type='DLC'
+            ORDER BY name COLLATE NOCASE
+            """
+        )
+
+        return cursor.fetchall()
+    
+    # -------------------------------------------------------------
+
+    def total_dlcs(self) -> int:
+
+        cursor = self.connection.connection.execute(
+            """
+            SELECT COUNT(*)
+            FROM games
+            WHERE file_type='DLC'
+            """
+        )
+
+        return cursor.fetchone()[0]
+        
+    # -------------------------------------------------------------
+
     def total_storage(self) -> int:
 
         cursor = self.connection.connection.execute(

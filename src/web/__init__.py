@@ -9,7 +9,7 @@ from src.web.routes.games import games_bp
 from src.web.routes.api import api_bp
 from src.web.routes.git import git_bp
 from src.web.routes.placeholders import placeholders_bp
-
+from src.web.routes.tasks import tasks_bp
 
 from pathlib import Path
 
@@ -43,6 +43,8 @@ def create_app():
     app.register_blueprint(git_bp)
 
     app.register_blueprint(placeholders_bp)
+    
+    app.register_blueprint(tasks_bp)
 
     # -------------------------------------------------------------
     # Shared services

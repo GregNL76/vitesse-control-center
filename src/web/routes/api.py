@@ -33,7 +33,12 @@ def games():
         GameService(get_database()).games_api()
     )
 
-
+@api_bp.route("/dlc")
+def dlc():
+    return jsonify(
+        GameService(get_database()).dlcs()
+    )
+    
 @api_bp.route("/missing-updates")
 def missing_updates():
     return jsonify(

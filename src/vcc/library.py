@@ -85,6 +85,16 @@ class Library:
             for game in self.games.values()
         )
 
+
+    @property
+    def total_dlcs(self):
+
+        return sum(
+            len(game.dlcs)
+            for game in self.games.values()
+        )
+
+
     # ---------------------------------------------------------
 
     @property
@@ -151,6 +161,7 @@ class Library:
             "games": self.total_games,
             "base_games": self.total_base_games,
             "updates": self.total_updates,
+            "dlcs": self.total_dlcs,
             "orphans": len(self.orphan_updates),
             "duplicate_updates": len(self.duplicate_updates),
             "health": self.health_score,

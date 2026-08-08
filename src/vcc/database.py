@@ -353,6 +353,12 @@ class Database:
                     update,
                 )
 
+            for dlc in game.dlcs:
+                self.insert_game_file(
+                    game.name,
+                    dlc,
+                )
+        
         self.connection.commit()
 
     # -----------------------------------------------------------------
