@@ -30,5 +30,7 @@ class DashboardService:
             "largest_games": self.games.largest_games(),
 
             "missing_updates": self.games.missing_updates(),
+            
+            "latest_additions": self.games.latest_additions(10),
 
         }

@@ -115,6 +115,8 @@ def index():
 
         missing_updates=data["missing_updates"],
 
+        latest_additions=data["latest_additions"],
+
     )
 
 

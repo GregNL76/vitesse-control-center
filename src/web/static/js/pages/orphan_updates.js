@@ -1,3 +1,18 @@
+function formatSize(bytes) {
+    if (bytes == null || isNaN(bytes)) return "";
+
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let size = Number(bytes);
+    let unitIndex = 0;
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+        size /= 1024;
+        unitIndex++;
+    }
+
+    return size.toFixed(unitIndex === 0 ? 0 : 2) + " " + units[unitIndex];
+}
+
 async function loadGrid() {
 
     const response = await fetch("/api/orphan-updates");
@@ -11,13 +26,26 @@ async function loadGrid() {
         return;
     }
 
-    const columnDefs = Object.keys(data[0]).map(key => ({
+    const visibleColumns = [
+    "filename",
+    "size",
+    "title_id",
+    "version",
+    "version_display"
+];
+
+const columnDefs = visibleColumns
+    .filter(key => key in data[0])
+    .map(key => ({
         field: key,
         headerName: key.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()),
         sortable: true,
         filter: true,
         resizable: true,
-        flex: 1
+        flex: key === "filename" ? 3 : 1,
+        valueFormatter: key === "size"
+            ? params => formatSize(params.value)
+            : undefined
     }));
 
     const gridApi = agGrid.createGrid(

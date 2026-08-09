@@ -16,16 +16,19 @@ class DatabaseQueries:
 
     def statistics(self):
 
+        storage = self.storage_by_type()
+
         return {
-
             "games": self.total_base_games(),
-
             "updates": self.total_updates(),
+            "dlcs": self.total_dlcs(),
+
+            "games_size": storage["games"],
+            "updates_size": storage["updates"],
+            "dlcs_size": storage["dlcs"],
 
             "orphan_updates": len(self.orphan_updates()),
-
             "duplicate_updates": len(self.duplicate_updates()),
-
         }
 
     # -------------------------------------------------------------
@@ -104,6 +107,36 @@ class DatabaseQueries:
 
         return cursor.fetchone()[0]
         
+    # -------------------------------------------------------------
+
+    def storage_by_type(self) -> dict:
+        cursor = self.connection.connection.execute(
+            """
+            SELECT
+                file_type,
+                COALESCE(SUM(size), 0) AS total_size
+            FROM games
+            WHERE file_type IN ('BASE', 'UPDATE', 'DLC')
+            GROUP BY file_type
+            """
+        )
+
+        result = {
+            "games": 0,
+            "updates": 0,
+            "dlcs": 0,
+        }
+
+        for row in cursor.fetchall():
+            if row["file_type"] == "BASE":
+                result["games"] = row["total_size"]
+            elif row["file_type"] == "UPDATE":
+                result["updates"] = row["total_size"]
+            elif row["file_type"] == "DLC":
+                result["dlcs"] = row["total_size"]
+
+        return result
+
     # -------------------------------------------------------------
 
     def total_storage(self) -> int:
@@ -491,3 +524,23 @@ class DatabaseQueries:
         )
 
         return cursor.fetchall()        
+        
+    # -------------------------------------------------------------
+
+    def latest_additions(self, limit: int = 10):
+        cursor = self.connection.connection.execute(
+            """
+            SELECT
+                name,
+                filename,
+                size,
+                file_type,
+                created
+            FROM games
+            ORDER BY created DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
+
+        return cursor.fetchall()

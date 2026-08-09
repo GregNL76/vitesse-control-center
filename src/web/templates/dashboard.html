@@ -1,5 +1,17 @@
 {% extends "base.html" %}
 
+{% macro format_size(bytes) %}
+    {% if bytes >= 1024**4 %}
+        {{ "%.2f"|format(bytes / 1024**4) }} TB
+    {% elif bytes >= 1024**3 %}
+        {{ "%.2f"|format(bytes / 1024**3) }} GB
+    {% elif bytes >= 1024**2 %}
+        {{ "%.2f"|format(bytes / 1024**2) }} MB
+    {% else %}
+        {{ "%.0f"|format(bytes / 1024) }} KB
+    {% endif %}
+{% endmacro %}
+
 {% block title %}
 Dashboard 2.0 - Vitesse Control Center
 {% endblock %}
@@ -11,235 +23,313 @@ Dashboard
 {% block content %}
 
 <div class="mb-4">
+
     <h2 class="h4 text-white mb-3">Statistics</h2>
+
     <div class="stats-grid">
 
+        <!-- Games -->
         <div class="stats-card">
-
-			<div class="card h-100">
-
-
-                <div class="card-body">
-
-                    <div class="card-value">
-
-                        {{ stats.games }}
-
-                    </div>
-
-                    <h5 class="card-title">
-
-                        Games
-
-                    </h5>
-
-                    <div class="card-subtitle">
-
-                        Available games
-
-                    </div>
-
-                </div>
-
+            <div class="stats-icon stats-icon-games">
+                <i class="bi bi-controller"></i>
             </div>
 
-        </div>
-
-        <div class="stats-card">
-
-			<div class="card h-100">
-
-                <div class="card-body">
-
-                    <div class="card-value">
-
-                        {{ stats.updates }}
-
-                    </div>
-
-                    <h5 class="card-title">
-
-                        Updates
-
-                    </h5>
-
-                    <div class="card-subtitle">
-
-                        Available updates
-
-                    </div>
-
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.games }}
                 </div>
 
-            </div>
+                <div class="stats-title">
+                    Games
+                </div>
 
-        </div>
-
-        <div class="stats-card">
-
-			<div class="card h-100">
-
-				<div class="card-body">
-
-					<div class="card-value">
-
-						{{ stats.missing_updates }}
-
-					</div>
-
-					<h5 class="card-title">
-
-						Missing updates
-
-					</h5>
-
-					<div class="card-subtitle">
-
-						There's work to be done here!
-
-					</div>
-
+                <div class="stats-size">
+					{{ format_size(stats.games_size) }}                
 				</div>
-
-			</div>
-
-		</div>
-
-        <div class="stats-card">
-
-			<div class="card h-100">
-
-                <div class="card-body">
-
-                    <div class="card-value">
-
-                        {{ stats.orphan_updates }}
-
-                    </div>
-
-                    <h5 class="card-title">
-
-                        Orphan Updates
-
-                    </h5>
-
-                    <div class="card-subtitle">
-
-                        Updates without a base game
-
-                    </div>
-
-                </div>
-
             </div>
-
         </div>
 
+
+        <!-- Updates -->
         <div class="stats-card">
-
-			<div class="card h-100">
-
-                <div class="card-body">
-
-                    <div class="card-value">
-
-                        {{ stats.duplicate_updates }}
-
-                    </div>
-
-                    <h5 class="card-title">
-
-                        Obsolete Updates
-
-                    </h5>
-
-                    <div class="card-subtitle">
-
-                        Obsolete or duplicate updates
-
-                    </div>
-
-                </div>
-
+            <div class="stats-icon stats-icon-updates">
+                <i class="bi bi-arrow-repeat"></i>
             </div>
 
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.updates }}
+                </div>
+
+                <div class="stats-title">
+                    Updates
+                </div>
+
+                <div class="stats-size">
+					{{ format_size(stats.updates_size) }}                
+				</div>
+            </div>
+        </div>
+
+
+        <!-- DLC -->
+        <div class="stats-card">
+            <div class="stats-icon stats-icon-dlc">
+                <i class="bi bi-box"></i>
+            </div>
+
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.dlcs }}
+                </div>
+
+                <div class="stats-title">
+                    DLC
+                </div>
+
+                <div class="stats-size">
+                    {{ format_size(stats.dlcs_size) }}
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Missing Updates -->
+        <div class="stats-card">
+            <div class="stats-icon stats-icon-missing">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.missing_updates }}
+                </div>
+
+                <div class="stats-title">
+                    Missing updates
+                </div>
+
+                <div class="stats-subtitle">
+                    There's work to be done!
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Orphan Updates -->
+        <div class="stats-card">
+            <div class="stats-icon stats-icon-orphan">
+                <i class="bi bi-box"></i>
+            </div>
+
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.orphan_updates }}
+                </div>
+
+                <div class="stats-title">
+                    Orphan Updates
+                </div>
+
+                <div class="stats-subtitle">
+                    Updates without a base game
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Obsolete Updates -->
+        <div class="stats-card">
+            <div class="stats-icon stats-icon-obsolete">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+
+            <div class="stats-content">
+                <div class="stats-value">
+                    {{ stats.duplicate_updates }}
+                </div>
+
+                <div class="stats-title">
+                    Obsolete Updates
+                </div>
+
+                <div class="stats-subtitle">
+                    Obsolete or duplicate updates
+                </div>
+            </div>
         </div>
 
     </div>
+
+</div>
 
     <div class="row mt-4">
 
-        <div class="col-lg-8">
+ <!-- Latest Additions -->
+<div class="col-lg-9">
 
-            <div class="card">
+    <div class="card h-100">
 
-                <div class="card-header">
+        <div class="card-header">
+            Latest Additions
+        </div>
 
-                    Actions
+        <div class="card-body p-0">
+
+            <div class="latest-additions-list">
+
+                {% for item in latest_additions %}
+
+                <div class="latest-addition-row">
+
+                    <!-- Icon -->
+                    <div class="latest-addition-icon
+                        {% if item["file_type"] == "BASE" %}
+                            latest-icon-base
+                        {% elif item["file_type"] == "UPDATE" %}
+                            latest-icon-update
+                        {% elif item["file_type"] == "DLC" %}
+                            latest-icon-dlc
+                        {% else %}
+                            latest-icon-default
+                        {% endif %}
+                    ">
+
+                        <i class="bi bi-box"></i>
+
+                    </div>
+
+
+                    <!-- Name -->
+                    <div class="latest-addition-name">
+                        {{ item["name"] }}
+                    </div>
+
+
+                    <!-- Type -->
+                    <div class="latest-addition-type">
+
+                        <span class="file-type-badge
+                            {% if item["file_type"] == "BASE" %}
+                                badge-base
+                            {% elif item["file_type"] == "UPDATE" %}
+                                badge-update
+                            {% elif item["file_type"] == "DLC" %}
+                                badge-dlc
+                            {% else %}
+                                badge-default
+                            {% endif %}
+                        ">
+                            {{ item["file_type"] }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- Size -->
+                    <div class="latest-addition-size">
+                        {{ format_size(item["size"]) }}
+                    </div>
+
+
+                    <!-- Date -->
+                    <div class="latest-addition-date">
+
+						{% if item["created"] %}
+							{{ item["created"][8:10] }} aug · {{ item["created"][11:16] }}
+						{% endif %}
+
+                    </div>
 
                 </div>
 
-                <div class="card-body">
+                {% else %}
 
-					<form id="refresh-form" action="/refresh-titledb" method="post" class="d-inline">
-
-						<button
-							id="refresh-button"
-							class="btn btn-primary">
-							<i class="bi bi-arrow-repeat"></i>
-							Refresh Library
-						</button>
-
-					</form>
-
-					<button
-						id="auditor-button"
-						class="btn btn-outline-secondary ms-2">
-						<i class="bi bi-search"></i>
-						Run Update Auditor
-					</button>
-
+                <div class="latest-addition-empty">
+                    No recent additions.
                 </div>
+
+                {% endfor %}
+
+            </div>
+
+    <div class="latest-additions-footer">
+        <a href="/games" class="latest-additions-link">
+            View all additions
+            <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- Right column -->
+    <div class="col-lg-3">
+
+        <!-- Status -->
+        <div class="card">
+
+            <div class="card-header">
+                Status
+            </div>
+
+            <div class="card-body">
+
+                <p>
+                    <span class="badge bg-success">
+                        ONLINE
+                    </span>
+                </p>
+
+                <p class="mb-1">
+                    Repository connected
+                </p>
+
+                <p class="mb-0">
+                    Database available
+                </p>
 
             </div>
 
         </div>
 
-        <div class="col-lg-4">
 
-            <div class="card">
+        <!-- Actions -->
+        <div class="card mt-3">
 
-                <div class="card-header">
+            <div class="card-header">
+                Actions
+            </div>
 
-                    Status
+            <div class="card-body d-grid gap-2">
 
-                </div>
+                <form
+                    id="refresh-form"
+                    action="/refresh-titledb"
+                    method="post">
 
-                <div class="card-body">
+                    <button
+                        id="refresh-button"
+                        class="btn btn-primary w-100">
 
-                    <p>
+                        <i class="bi bi-arrow-repeat"></i>
+                        Refresh Library
 
-                        <span class="badge bg-success">
+                    </button>
 
-                            ONLINE
+                </form>
 
-                        </span>
+                <button
+                    id="auditor-button"
+                    class="btn btn-outline-secondary w-100">
 
-                    </p>
+                    <i class="bi bi-search"></i>
+                    Run Update Auditor
 
-                    <p class="mb-1">
-
-                        Repository connected
-
-                    </p>
-
-                    <p class="mb-0">
-
-                        Database available
-
-                    </p>
-
-                </div>
+                </button>
 
             </div>
 
@@ -247,6 +337,7 @@ Dashboard
 
     </div>
 
+</div>
 
 		<script>
 		document.getElementById("refresh-form").addEventListener("submit", async function(event) {
@@ -269,9 +360,8 @@ Dashboard
 				button.innerHTML = '<i class="bi bi-check-lg"></i> Refreshed';
 
 				setTimeout(() => {
-					button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refresh Library';
-					button.disabled = false;
-				}, 2000);
+					window.location.reload();
+				}, 1000);
 
 			} catch (error) {
 				button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';

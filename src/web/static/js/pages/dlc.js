@@ -18,20 +18,19 @@ document.addEventListener("DOMContentLoaded", async () => {
             {
                 field: "name",
                 headerName: "DLC",
-                flex: 3,
-                minWidth: 300
+                width: 480
             },
 
             {
                 field: "title_id",
                 headerName: "Title ID",
-                width: 190
+                width: 135
             },
 
             {
                 field: "version",
                 headerName: "Version",
-                width: 130,
+                width: 100,
                 valueFormatter: params => {
                     if (
                         params.value === null ||
@@ -51,7 +50,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             {
                 field: "size_display",
                 headerName: "Size",
-                width: 130
+                width: 100
             },
 
             {

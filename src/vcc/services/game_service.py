@@ -303,6 +303,14 @@ class GameService:
         
     # -----------------------------------------------------------------
 
+    def latest_additions(self, limit: int = 10):
+        """
+        Return the most recently added files.
+        """
+        return self.database.queries.latest_additions(limit)
+        
+    # -----------------------------------------------------------------
+
     @staticmethod
     def _nswgf_slug(name: str) -> str:
 
