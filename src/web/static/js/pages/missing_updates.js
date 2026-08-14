@@ -34,7 +34,7 @@ async function loadGrid() {
             },
             {
                 headerName: "Links",
-                width: 150,
+                width: 185,
                 cellRenderer: params => {
                     const links = params.data;
 
@@ -49,6 +49,10 @@ async function loadGrid() {
 
                         <a class="btn btn-sm btn-outline-secondary" href="${links.search2_url}" target="_blank">
                             S2
+                        </a>
+						
+                        <a class="btn btn-sm btn-outline-secondary" href="${links.search3_url}" target="_blank">
+                            S3
                         </a>
                     `;
                 },

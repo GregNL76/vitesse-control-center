@@ -131,7 +131,10 @@ class GameService:
                         f"https://nswgf.com/?s={game.name}",
 
                     "search2":
-                        f"https://romslab.com/?s={game.name}&post_type=post"
+                        f"https://romslab.com/?s={game.name}&post_type=post",
+
+                    "search3":
+                        f"https://eggnsemulator.com/?s={game.name}"                        
                 }
 
             })

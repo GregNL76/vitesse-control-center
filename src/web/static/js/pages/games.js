@@ -91,7 +91,7 @@ async function loadGrid() {
 
             {
                 headerName: "Links",
-                width: 150,
+                width: 185,
 
                 cellRenderer: params => {
 
@@ -117,6 +117,13 @@ async function loadGrid() {
                        target="_blank"
                        rel="noopener noreferrer">
                         S2
+                    </a>
+
+                    <a class="btn btn-sm btn-outline-secondary"
+                       href="${links.search3}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        S3
                     </a>
                 `;
                 },
