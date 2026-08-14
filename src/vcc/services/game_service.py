@@ -134,7 +134,10 @@ class GameService:
                         f"https://romslab.com/?s={game.name}&post_type=post",
 
                     "search3":
-                        f"https://eggnsemulator.com/?s={game.name}"                        
+                        f"https://eggnsemulator.com/?s={game.name}",
+
+                    "search4":
+                        f"https://www.ziperto.com/?s={game.name}"
                 }
 
             })

@@ -103,26 +103,31 @@ async function loadGrid() {
 	];
 
 
-	const gridApi = agGrid.createGrid(
-		document.getElementById("games-grid"),
-		{
+const gridApi = agGrid.createGrid(
+    document.getElementById("games-grid"),
+    {
 
-			theme: "legacy",
+        theme: "legacy",
 
-			rowData: data,
+        rowData: data,
 
-			defaultColDef: {
+        defaultColDef: {
 
-				sortable: true,
-				filter: true,
-				resizable: true
+            sortable: true,
+            filter: true,
+            resizable: true,
 
-			},
+            cellStyle: {
+                userSelect: "text",
+                WebkitUserSelect: "text"
+            }
 
-			columnDefs
+        },
 
-		}
-	); 
+        columnDefs
+
+    }
+);
 
     document
         .getElementById("quickFilter")

@@ -7,11 +7,16 @@ async function loadGrid() {
         theme: "legacy",
         rowData: data,
 
-        defaultColDef: {
-            sortable: true,
-            filter: true,
-            resizable: true
-        },
+		defaultColDef: {
+			sortable: true,
+			filter: true,
+			resizable: true,
+
+			cellStyle: {
+				userSelect: "text",
+				WebkitUserSelect: "text"
+			}
+		},
 
         columnDefs: [
 
@@ -89,49 +94,196 @@ async function loadGrid() {
                 }
             },
 
-            {
-                headerName: "Links",
-                width: 185,
+{
+    headerName: "Links",
+    width: 110,
 
-                cellRenderer: params => {
+    cellRenderer: params => {
 
-                    const links = params.data.external_links;
+        const links = params.data.external_links;
 
-                    return `
-                    <a class="btn btn-sm btn-outline-secondary"
-                       href="${links.game_page}"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        Open
-                    </a>
+        const wrapper = document.createElement("div");
 
-                    <a class="btn btn-sm btn-outline-secondary"
-                       href="${links.search}"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        S1
-                    </a>
+        wrapper.style.display = "flex";
+        wrapper.style.alignItems = "center";
+        wrapper.style.justifyContent = "flex-start";
+        wrapper.style.gap = "4px";
+        wrapper.style.height = "100%";
 
-                    <a class="btn btn-sm btn-outline-secondary"
-                       href="${links.search2}"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        S2
-                    </a>
+        // ---------------------------------------------------------
+        // Open button
+        // ---------------------------------------------------------
 
-                    <a class="btn btn-sm btn-outline-secondary"
-                       href="${links.search3}"
-                       target="_blank"
-                       rel="noopener noreferrer">
-                        S3
-                    </a>
-                `;
-                },
+        const openButton = document.createElement("a");
 
-                sortable: false,
-                filter: false
+        openButton.className = "btn btn-sm btn-outline-secondary";
+        openButton.href = links.game_page;
+        openButton.target = "_blank";
+        openButton.rel = "noopener noreferrer";
+        openButton.textContent = "Open";
+
+        // ---------------------------------------------------------
+        // Search button
+        // ---------------------------------------------------------
+
+        const searchButton = document.createElement("button");
+
+        searchButton.type = "button";
+        searchButton.className = "btn btn-sm btn-outline-secondary";
+		searchButton.textContent = "🔍";
+		searchButton.setAttribute("aria-label", "Search");
+		searchButton.title = "Search";
+        searchButton.style.whiteSpace = "nowrap";
+
+        // ---------------------------------------------------------
+        // Search popup
+        // ---------------------------------------------------------
+
+        let menu = null;
+        let hideTimer = null;
+
+        function hideMenu() {
+
+            if (!menu) {
+                return;
             }
 
+            menu.remove();
+            menu = null;
+        }
+
+        function scheduleHide() {
+
+            clearTimeout(hideTimer);
+
+            hideTimer = setTimeout(() => {
+                hideMenu();
+            }, 250);
+        }
+
+        function showMenu() {
+
+            clearTimeout(hideTimer);
+
+            if (menu) {
+                return;
+            }
+
+            menu = document.createElement("div");
+
+            menu.style.position = "fixed";
+            menu.style.zIndex = "999999";
+            menu.style.minWidth = "160px";
+
+            menu.style.background = "#252b33";
+            menu.style.border = "1px solid #3d4652";
+            menu.style.borderRadius = "6px";
+
+            menu.style.padding = "4px";
+            menu.style.boxShadow = "0 6px 18px rgba(0,0,0,0.45)";
+
+            const sites = [
+                {
+                    name: "NSWGF",
+                    url: links.search
+                },
+                {
+                    name: "RomsLab",
+                    url: links.search2
+                },
+                {
+                    name: "EggNS Emulator",
+                    url: links.search3
+                },
+                {
+                    name: "Ziperto",
+                    url: links.search4
+                }
+            ];
+
+            sites.forEach(site => {
+
+                if (!site.url) {
+                    return;
+                }
+
+                const item = document.createElement("a");
+
+                item.href = site.url;
+                item.target = "_blank";
+                item.rel = "noopener noreferrer";
+
+                item.textContent = site.name;
+
+                item.style.display = "block";
+                item.style.padding = "7px 10px";
+
+                item.style.color = "#ffffff";
+                item.style.textDecoration = "none";
+
+                item.style.borderRadius = "4px";
+                item.style.whiteSpace = "nowrap";
+
+                item.addEventListener("mouseenter", () => {
+                    item.style.background = "#343c47";
+                    clearTimeout(hideTimer);
+                });
+
+                item.addEventListener("mouseleave", () => {
+                    item.style.background = "transparent";
+                    scheduleHide();
+                });
+
+                menu.appendChild(item);
+            });
+
+            document.body.appendChild(menu);
+
+            // Position the popup directly below the Search button
+            const rect = searchButton.getBoundingClientRect();
+
+            menu.style.left = `${rect.left}px`;
+            menu.style.top = `${rect.bottom + 4}px`;
+
+            menu.addEventListener("mouseenter", () => {
+                clearTimeout(hideTimer);
+            });
+
+            menu.addEventListener("mouseleave", () => {
+                scheduleHide();
+            });
+        }
+
+        // Hover
+        searchButton.addEventListener("mouseenter", () => {
+            showMenu();
+        });
+
+        searchButton.addEventListener("mouseleave", () => {
+            scheduleHide();
+        });
+
+        // Click
+        searchButton.addEventListener("click", event => {
+
+            event.stopPropagation();
+
+            if (menu) {
+                hideMenu();
+            } else {
+                showMenu();
+            }
+        });
+
+        wrapper.appendChild(openButton);
+        wrapper.appendChild(searchButton);
+
+        return wrapper;
+    },
+
+    sortable: false,
+    filter: false
+}
         ]
 
     };

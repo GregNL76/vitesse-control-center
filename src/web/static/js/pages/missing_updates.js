@@ -5,12 +5,17 @@ async function loadGrid() {
     const gridOptions = {
         theme: "legacy",
         rowData: data,
+		
+		defaultColDef: {
+			sortable: true,
+			filter: true,
+			resizable: true,
 
-        defaultColDef: {
-            sortable: true,
-            filter: true,
-            resizable: true
-        },
+			cellStyle: {
+				userSelect: "text",
+				WebkitUserSelect: "text"
+			}
+		},
 
         columnDefs: [
             {
@@ -32,33 +37,232 @@ async function loadGrid() {
                 headerName: "Latest",
                 width: 100
             },
-            {
-                headerName: "Links",
-                width: 185,
-                cellRenderer: params => {
-                    const links = params.data;
+{
+    headerName: "🔍",
+    width: 60,
 
-                    return `
-                        <a class="btn btn-sm btn-outline-secondary" href="${links.url}" target="_blank">
-                            Open
-                        </a>
+    cellRenderer: params => {
 
-                        <a class="btn btn-sm btn-outline-secondary" href="${links.search_url}" target="_blank">
-                            S1
-                        </a>
+        const links = params.data;
 
-                        <a class="btn btn-sm btn-outline-secondary" href="${links.search2_url}" target="_blank">
-                            S2
-                        </a>
-						
-                        <a class="btn btn-sm btn-outline-secondary" href="${links.search3_url}" target="_blank">
-                            S3
-                        </a>
-                    `;
-                },
-                sortable: false,
-                filter: false
+        const dropdownWrapper = document.createElement("div");
+
+        dropdownWrapper.setAttribute("data-missing-search-popup", "1");
+
+        dropdownWrapper.style.position = "relative";
+        dropdownWrapper.style.display = "flex";
+        dropdownWrapper.style.alignItems = "center";
+        dropdownWrapper.style.justifyContent = "center";
+        dropdownWrapper.style.height = "100%";
+
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "btn btn-sm btn-outline-secondary";
+        button.textContent = "🔍";
+        button.title = "Search";
+
+        button.style.width = "42px";
+        button.style.padding = "4px 0";
+        button.style.textAlign = "center";
+
+function buildMenu() {
+
+    const menu = document.createElement("div");
+
+    menu.style.position = "fixed";
+    menu.style.zIndex = "999999";
+    menu.style.width = "160px";
+
+    menu.style.background = "#252b33";
+    menu.style.border = "1px solid #3d4652";
+    menu.style.borderRadius = "6px";
+
+    menu.style.padding = "4px";
+    menu.style.margin = "0";
+
+    menu.style.boxSizing = "border-box";
+
+    menu.style.boxShadow =
+        "0 6px 18px rgba(0,0,0,0.45)";
+
+const sites = [
+    {
+        name: "NSWGF",
+        url: links.search_url
+    },
+    {
+        name: "RomsLab",
+        url: links.search2_url
+    },
+    {
+        name: "EggNS Emulator",
+        url: links.search3_url
+    },
+    {
+        name: "Ziperto",
+        url: links.search4_url
+    }
+];
+
+    sites.forEach(site => {
+
+        if (!site.url) {
+            return;
+        }
+
+        const item = document.createElement("a");
+
+        item.href = site.url;
+        item.target = "_blank";
+        item.rel = "noopener noreferrer";
+
+        item.textContent = site.name;
+
+        item.style.display = "block";
+        item.style.width = "100%";
+        item.style.boxSizing = "border-box";
+
+        item.style.padding = "7px 10px";
+
+        item.style.color = "#ffffff";
+        item.style.textDecoration = "none";
+
+        item.style.fontSize = "13px";
+        item.style.lineHeight = "18px";
+
+        item.style.borderRadius = "4px";
+
+        item.style.whiteSpace = "nowrap";
+
+        item.addEventListener(
+            "mouseenter",
+            () => {
+                item.style.background = "#343c47";
             }
+        );
+
+        item.addEventListener(
+            "mouseleave",
+            () => {
+                item.style.background = "transparent";
+            }
+        );
+
+        item.addEventListener(
+            "mousedown",
+            event => event.stopPropagation()
+        );
+
+        item.addEventListener(
+            "click",
+            event => event.stopPropagation()
+        );
+
+        menu.appendChild(item);
+    });
+
+    return menu;
+}
+
+        dropdownWrapper._popup = null;
+
+ function showPopup() {
+
+    if (dropdownWrapper._popup) {
+        return;
+    }
+
+    const menuEl = buildMenu();
+
+    // Put the popup outside AG Grid so it cannot be clipped
+    document.body.appendChild(menuEl);
+
+    // Position relative to the search button
+    const btnRect = button.getBoundingClientRect();
+
+    menuEl.style.position = "fixed";
+    menuEl.style.display = "block";
+    menuEl.style.visibility = "visible";
+
+    menuEl.style.left =
+        `${btnRect.right - menuEl.offsetWidth}px`;
+
+    menuEl.style.top =
+        `${btnRect.bottom + 4}px`;
+
+    menuEl.style.zIndex = "999999";
+
+    dropdownWrapper._popup = menuEl;
+}
+        function hidePopup() {
+
+            if (!dropdownWrapper._popup) {
+                return;
+            }
+
+            const el =
+                dropdownWrapper._popup;
+
+            if (el.parentNode) {
+                el.parentNode.removeChild(el);
+            }
+
+            dropdownWrapper._popup = null;
+        }
+
+         // ---------------------------------------------------------
+        // Click
+        // ---------------------------------------------------------
+
+         button.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                if (dropdownWrapper._popup) {
+
+                    hidePopup();
+
+                } else {
+
+                    closeAllMissingSearchPopups();
+
+                    showPopup();
+                }
+            }
+        );
+
+        // ---------------------------------------------------------
+        // Hover
+        // ---------------------------------------------------------
+
+        button.addEventListener(
+            "mouseenter",
+            () => {
+                closeAllMissingSearchPopups();
+                showPopup();
+            }
+        );
+		
+        // ---------------------------------------------------------
+        // Expose close function
+        // ---------------------------------------------------------
+
+        dropdownWrapper.closeDropdown = hidePopup;
+
+        dropdownWrapper.appendChild(button);
+
+        return dropdownWrapper;
+    },
+
+    suppressMovable: true,
+    suppressSizeToFit: true,
+
+    sortable: false,
+    filter: false
+}
         ]
     };
 
@@ -66,12 +270,21 @@ async function loadGrid() {
         document.getElementById("games-grid"),
         gridOptions
     );
+}
 
-    document
-        .getElementById("quickFilter")
-        .addEventListener("input", function () {
-            gridApi.setQuickFilter(this.value);
-        });
+function closeAllMissingSearchPopups() {
+
+    const dropdowns = document.querySelectorAll(
+        '[data-missing-search-popup]'
+    );
+
+    dropdowns.forEach(dropdown => {
+
+        if (dropdown.closeDropdown) {
+            dropdown.closeDropdown();
+        }
+
+    });
 }
 
 window.addEventListener("load", loadGrid);

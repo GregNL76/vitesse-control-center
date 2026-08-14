@@ -488,3 +488,29 @@ a {
     }
 
 }
+
+
+/* -------------------------------------------------------------
+   Search dropdown
+   ------------------------------------------------------------- */
+
+
+.search-dropdown:hover .search-menu {
+    display: block;
+}
+
+.search-menu a {
+    display: block;
+
+    padding: 7px 10px;
+
+    color: var(--text);
+    text-decoration: none;
+
+    white-space: nowrap;
+    border-radius: 4px;
+}
+
+.search-menu a:hover {
+    background: var(--border);
+}

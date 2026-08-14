@@ -38,11 +38,22 @@ class UpdateAuditor:
                     {
                         "title_id": game["title_id"],
                         "name": game["name"],
-                        "installed": installed, 
+                        "installed": installed,
                         "latest": latest,
-                        "url": UrlBuilder.game_url(game["name"]),
-                        "search_url": UrlBuilder.search_url(game["name"]),
-                        "search2_url": UrlBuilder.search2_url(game["name"]),
+
+                        "url": UrlBuilder.tinfoil_url(game["title_id"]),
+
+                        "search_url":
+                            UrlBuilder.search_url(game["name"]),
+
+                        "search2_url":
+                            UrlBuilder.search2_url(game["name"]),
+
+                        "search3_url":
+                            UrlBuilder.search3_url(game["name"]),
+
+                        "search4_url":
+                            UrlBuilder.search4_url(game["name"]),
                     }
                 )
 

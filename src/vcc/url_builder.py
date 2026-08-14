@@ -14,6 +14,10 @@ class UrlBuilder:
     BASE_URL = "https://nswgame.com"
     SEARCH_BASE_URL = "https://nswgf.com"
 
+    @classmethod
+    def tinfoil_url(cls, title_id: str) -> str:
+        return f"https://tinfoil.io/Title/{title_id}"
+        
     @staticmethod
     def slugify(title: str) -> str:
         """
@@ -76,6 +80,14 @@ class UrlBuilder:
     def search2_url(cls, title: str) -> str:
         return f"https://romslab.com/?s={quote_plus(title)}&post_type=post"
 
+    @classmethod
+    def search3_url(cls, title: str) -> str:
+        return f"https://eggnsemulator.com/?s={quote_plus(title)}"
+
+    @classmethod
+    def search4_url(cls, title: str) -> str:
+        return f"https://www.ziperto.com/?s={quote_plus(title)}"
+        
     @classmethod
     def game_search_url(cls, title: str) -> str:
         return cls.search_url(title)

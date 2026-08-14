@@ -43,6 +43,10 @@ const columnDefs = visibleColumns
         filter: true,
         resizable: true,
         flex: key === "filename" ? 3 : 1,
+        cellStyle: {
+            userSelect: "text",
+            WebkitUserSelect: "text"
+        },
         valueFormatter: key === "size"
             ? params => formatSize(params.value)
             : undefined

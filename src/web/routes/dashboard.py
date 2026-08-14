@@ -130,6 +130,22 @@ def index():
 )
 def refresh_titledb():
 
-    FullRefreshTask().execute()
+    try:
 
-    return "", 204
+        FullRefreshTask().execute()
+
+        return "", 204
+
+    except Exception as e:
+
+        import traceback
+
+        traceback.print_exc()
+
+        return (
+            f"Refresh failed:\n\n"
+            f"{type(e).__name__}: {e}\n\n"
+            f"{traceback.format_exc()}",
+            500,
+            {"Content-Type": "text/plain; charset=utf-8"},
+        )

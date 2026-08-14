@@ -357,9 +357,14 @@ Dashboard
 					method: "POST"
 				});
 
-				if (!response.ok) {
-					throw new Error("Refresh failed");
-				}
+if (!response.ok) {
+
+    const errorText = await response.text();
+
+    throw new Error(
+        errorText || `Refresh failed: HTTP ${response.status}`
+    );
+}
 
 				button.innerHTML = '<i class="bi bi-check-lg"></i> Refreshed';
 
@@ -367,14 +372,20 @@ Dashboard
 					window.location.reload();
 				}, 1000);
 
-			} catch (error) {
-				button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';
+} catch (error) {
 
-				setTimeout(() => {
-					button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refresh Library';
-					button.disabled = false;
-				}, 3000);
-			}
+    console.error("Refresh Library failed:", error);
+
+    button.innerHTML =
+        `<i class="bi bi-x-lg"></i> ${error.message}`;
+
+    setTimeout(() => {
+        button.innerHTML =
+            '<i class="bi bi-arrow-repeat"></i> Refresh Library';
+
+        button.disabled = false;
+    }, 5000);
+}
 		});
 		</script>
 
