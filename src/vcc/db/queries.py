@@ -74,6 +74,28 @@ class DatabaseQueries:
 
     # -------------------------------------------------------------
 
+    def all_updates(self):
+
+        cursor = self.connection.connection.execute(
+            """
+            SELECT
+                id,
+                name,
+                title_id,
+                version,
+                filename,
+                full_path,
+                size
+            FROM games
+            WHERE file_type = 'UPDATE'
+            ORDER BY name, version DESC
+            """
+        )
+
+        return cursor.fetchall()
+
+    # -------------------------------------------------------------
+
     def dlcs(self):
         
         cursor = self.connection.connection.execute(

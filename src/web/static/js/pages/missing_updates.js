@@ -5,7 +5,7 @@ async function loadGrid() {
     const gridOptions = {
         theme: "legacy",
         rowData: data,
-		
+
 		defaultColDef: {
 			sortable: true,
 			filter: true,
@@ -165,87 +165,160 @@ const sites = [
     return menu;
 }
 
-        dropdownWrapper._popup = null;
+ dropdownWrapper._popup = null;
+ dropdownWrapper._hideTimer = null;
+
+ function cancelHidePopup() {
+     if (dropdownWrapper._hideTimer) {
+         clearTimeout(dropdownWrapper._hideTimer);
+         dropdownWrapper._hideTimer = null;
+     }
+ }
+
+ function scheduleHidePopup() {
+     cancelHidePopup();
+
+     // Kleine vertraging zodat je van de knop naar de popup kunt bewegen
+     // zonder dat de popup tussendoor verdwijnt.
+     dropdownWrapper._hideTimer = setTimeout(() => {
+         hidePopup();
+     }, 180);
+ }
 
  function showPopup() {
 
-    if (dropdownWrapper._popup) {
-        return;
-    }
+     cancelHidePopup();
 
-    const menuEl = buildMenu();
+     if (dropdownWrapper._popup) {
+         return;
+     }
 
-    // Put the popup outside AG Grid so it cannot be clipped
-    document.body.appendChild(menuEl);
+     const menuEl = buildMenu();
 
-    // Position relative to the search button
-    const btnRect = button.getBoundingClientRect();
+     // Popup buiten AG Grid plaatsen zodat deze niet wordt afgeknipt
+     document.body.appendChild(menuEl);
 
-    menuEl.style.position = "fixed";
-    menuEl.style.display = "block";
-    menuEl.style.visibility = "visible";
+     // Positioneren ten opzichte van de zoekknop
+     const btnRect = button.getBoundingClientRect();
 
-    menuEl.style.left =
-        `${btnRect.right - menuEl.offsetWidth}px`;
+     menuEl.style.position = "fixed";
+     menuEl.style.display = "block";
+     menuEl.style.visibility = "visible";
 
-    menuEl.style.top =
-        `${btnRect.bottom + 4}px`;
+// ---------------------------------------------------------
+// Popup binnen het scherm houden
+// ---------------------------------------------------------
 
-    menuEl.style.zIndex = "999999";
+const menuWidth = menuEl.offsetWidth;
+const menuHeight = menuEl.offsetHeight;
+const margin = 8;
 
-    dropdownWrapper._popup = menuEl;
+let left = btnRect.right - menuWidth;
+let top = btnRect.bottom + 4;
+
+// Niet buiten de rechterkant van het scherm
+if (left + menuWidth > window.innerWidth - margin) {
+    left = window.innerWidth - menuWidth - margin;
 }
-        function hidePopup() {
 
-            if (!dropdownWrapper._popup) {
-                return;
-            }
+// Niet buiten de linkerkant van het scherm
+if (left < margin) {
+    left = margin;
+}
 
-            const el =
-                dropdownWrapper._popup;
+// Als er onder de knop niet genoeg ruimte is,
+// plaats de popup boven de knop.
+if (top + menuHeight > window.innerHeight - margin) {
+    top = btnRect.top - menuHeight - 4;
+}
 
-            if (el.parentNode) {
-                el.parentNode.removeChild(el);
-            }
+// Ook boven de bovenrand blijven
+if (top < margin) {
+    top = margin;
+}
 
-            dropdownWrapper._popup = null;
-        }
+menuEl.style.left = `${left}px`;
+menuEl.style.top = `${top}px`;
 
-         // ---------------------------------------------------------
-        // Click
-        // ---------------------------------------------------------
+     menuEl.style.zIndex = "999999";
 
-         button.addEventListener(
-            "click",
-            event => {
+     // Popup open houden zolang de muis erboven staat
+     menuEl.addEventListener(
+         "mouseenter",
+         cancelHidePopup
+     );
 
-                event.stopPropagation();
+     menuEl.addEventListener(
+         "mouseleave",
+         scheduleHidePopup
+     );
 
-                if (dropdownWrapper._popup) {
+     dropdownWrapper._popup = menuEl;
+ }
 
-                    hidePopup();
+ function hidePopup() {
 
-                } else {
+     cancelHidePopup();
 
-                    closeAllMissingSearchPopups();
+     if (!dropdownWrapper._popup) {
+         return;
+     }
 
-                    showPopup();
-                }
-            }
-        );
+     const el = dropdownWrapper._popup;
 
-        // ---------------------------------------------------------
-        // Hover
-        // ---------------------------------------------------------
+     if (el.parentNode) {
+         el.parentNode.removeChild(el);
+     }
 
-        button.addEventListener(
-            "mouseenter",
-            () => {
-                closeAllMissingSearchPopups();
-                showPopup();
-            }
-        );
-		
+     dropdownWrapper._popup = null;
+ }
+
+
+ // ---------------------------------------------------------
+ // Click
+ // ---------------------------------------------------------
+
+ button.addEventListener(
+     "click",
+     event => {
+
+         event.stopPropagation();
+
+         if (dropdownWrapper._popup) {
+
+             hidePopup();
+
+         } else {
+
+             closeAllMissingSearchPopups();
+             showPopup();
+         }
+     }
+ );
+
+
+ // ---------------------------------------------------------
+ // Hover
+ // ---------------------------------------------------------
+
+ button.addEventListener(
+     "mouseenter",
+     () => {
+
+         cancelHidePopup();
+         closeAllMissingSearchPopups();
+         showPopup();
+     }
+ );
+
+ button.addEventListener(
+     "mouseleave",
+     () => {
+
+         scheduleHidePopup();
+     }
+);
+
         // ---------------------------------------------------------
         // Expose close function
         // ---------------------------------------------------------
@@ -270,6 +343,24 @@ const sites = [
         document.getElementById("games-grid"),
         gridOptions
     );
+
+
+        const searchInput =
+	        document.getElementById("quickFilter");
+
+	    searchInput.addEventListener("input", event => {
+
+	        gridApi.setFilterModel({
+	            name: {
+	                filterType: "text",
+	                type: "contains",
+	                filter: event.target.value
+	            }
+	        });
+
+    });
+
+
 }
 
 function closeAllMissingSearchPopups() {

@@ -240,10 +240,42 @@ async function loadGrid() {
             document.body.appendChild(menu);
 
             // Position the popup directly below the Search button
-            const rect = searchButton.getBoundingClientRect();
+// ---------------------------------------------------------
+// Popup binnen het scherm houden
+// ---------------------------------------------------------
 
-            menu.style.left = `${rect.left}px`;
-            menu.style.top = `${rect.bottom + 4}px`;
+const rect = searchButton.getBoundingClientRect();
+const margin = 8;
+
+const menuWidth = menu.offsetWidth;
+const menuHeight = menu.offsetHeight;
+
+let left = rect.left;
+let top = rect.bottom + 4;
+
+// Niet buiten de rechterkant van het scherm
+if (left + menuWidth > window.innerWidth - margin) {
+    left = window.innerWidth - menuWidth - margin;
+}
+
+// Niet buiten de linkerkant van het scherm
+if (left < margin) {
+    left = margin;
+}
+
+// Als er onder de knop niet genoeg ruimte is,
+// plaats de popup boven de knop
+if (top + menuHeight > window.innerHeight - margin) {
+    top = rect.top - menuHeight - 4;
+}
+
+// Ook boven de bovenrand blijven
+if (top < margin) {
+    top = margin;
+}
+
+menu.style.left = `${left}px`;
+menu.style.top = `${top}px`;
 
             menu.addEventListener("mouseenter", () => {
                 clearTimeout(hideTimer);
@@ -293,13 +325,20 @@ async function loadGrid() {
         gridOptions
     );
 
-    document
-        .getElementById("quickFilter")
-        .addEventListener("input", function () {
+const searchInput =
+    document.getElementById("quickFilter");
 
-            gridApi.setQuickFilter(this.value);
+searchInput.addEventListener("input", event => {
 
-        });
+    gridApi.setFilterModel({
+        name: {
+            filterType: "text",
+            type: "contains",
+            filter: event.target.value
+        }
+    });
+
+});
 
 }
 window.addEventListener("load", loadGrid);

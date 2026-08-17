@@ -31,6 +31,6 @@ class DashboardService:
 
             "missing_updates": self.games.missing_updates(),
             
-            "latest_additions": self.games.latest_additions(10),
+            "latest_additions": self.games.latest_additions(25),
 
         }

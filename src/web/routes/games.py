@@ -9,6 +9,11 @@ def games():
     return render_template("games.html")
 
 
+@games_bp.route("/updates")
+def updates():
+    return render_template("updates.html")
+
+
 @games_bp.route("/dlc")
 def dlc():
     return render_template("dlc.html")
