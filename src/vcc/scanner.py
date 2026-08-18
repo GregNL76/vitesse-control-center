@@ -57,10 +57,9 @@ def parse_file(path: Path):
 def scan(folder) -> Library:
 
     folder = Path(folder)
-
     library = Library()
 
-    for file in folder.iterdir():
+    for file in folder.rglob("*"):
 
         if not file.is_file():
             continue
@@ -74,7 +73,6 @@ def scan(folder) -> Library:
             continue
 
         name, game_file = result
-
         library.add_file(name, game_file)
 
     return library

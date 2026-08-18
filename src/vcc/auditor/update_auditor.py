@@ -54,7 +54,10 @@ class UpdateAuditor:
 
                         "search4_url":
                             UrlBuilder.search4_url(game["name"]),
-                    }
+ 
+ 			"search5_url":
+                            UrlBuilder.search5_url(game["name"]),
+ 			}
                 )
 
         return sorted(

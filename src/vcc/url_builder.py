@@ -87,7 +87,11 @@ class UrlBuilder:
     @classmethod
     def search4_url(cls, title: str) -> str:
         return f"https://www.ziperto.com/?s={quote_plus(title)}"
-        
+
+    @classmethod
+    def search5_url(cls, title: str) -> str:
+        return f"https://www.google.com/search?q=site%3Ataodung.com+{quote_plus(title)}"
+    
     @classmethod
     def game_search_url(cls, title: str) -> str:
         return cls.search_url(title)
