@@ -15,3 +15,12 @@ logs/
 data/*.sqlite
 data/*.sqlite.old
 data/*.db
+
+# Downloaded nx-versions cache
+data/nx_versions.json
+
+# VCC SQLite database
+data/*.sqlite
+data/*.sqlite-shm
+data/*.sqlite-wal
+data/*.db

@@ -7,20 +7,21 @@ available in the locally synchronized Tinfoil database.
 
 from __future__ import annotations
 from src.vcc.url_builder import UrlBuilder
+from src.vcc.sources.nx_versions import NxVersionsSource
 
 class UpdateAuditor:
 
-    def __init__(self, repository):
+    def __init__(self, repository, nx_versions=None):
 
         self.repository = repository
+        self.nx_versions = nx_versions or NxVersionsSource()
 
     # -------------------------------------------------------------
 
     def audit(self):
 
         """
-        Returns a list of games for which a newer update
-        exists in the Tinfoil database.
+        Returns games with an update in Tinfoil or cached nx-versions.
         """
 
         report = []
@@ -30,7 +31,10 @@ class UpdateAuditor:
         for game in games:
 
             installed = game["installed_version"]
-            latest = game["latest_version"]
+            tinfoil_latest = game["latest_version"]
+            update_title_id = game["title_id"][:13] + "800"
+            nx_latest = self.nx_versions.latest_version(update_title_id) or 0
+            latest = max(tinfoil_latest, nx_latest)
 
             if latest > installed:
 
@@ -40,6 +44,13 @@ class UpdateAuditor:
                         "name": game["name"],
                         "installed": installed,
                         "latest": latest,
+                        "tinfoil_latest": tinfoil_latest,
+                        "nx_versions_latest": nx_latest,
+                        "sources_disagree": (
+                            tinfoil_latest > 0
+                            and nx_latest > 0
+                            and tinfoil_latest != nx_latest
+                        ),
 
                         "url": UrlBuilder.tinfoil_url(game["title_id"]),
 

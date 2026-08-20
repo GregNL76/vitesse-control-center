@@ -21,7 +21,7 @@ async function loadGrid() {
             {
                 field: "name",
                 headerName: "Game",
-                flex: 3
+                flex: 2
             },
             {
                 field: "title_id",
@@ -29,7 +29,7 @@ async function loadGrid() {
                 width: 160
             },            {
                 field: "installed",
-                headerName: "Installed",
+                headerName: "Local",
                 width: 100
             },
             {
@@ -37,9 +37,25 @@ async function loadGrid() {
                 headerName: "Latest",
                 width: 100
             },
+            {
+                field: "tinfoil_latest",
+                headerName: "Tinfoil",
+                width: 100
+            },
+            {
+                field: "nx_versions_latest",
+                headerName: "NX",
+                width: 90
+            },
+            {
+                field: "sources_disagree",
+                headerName: "Diff",
+                width: 85,
+                valueFormatter: params => params.value ? "⚠" : ""
+            },
 {
     headerName: "🔍",
-    width: 60,
+    width: 50,
 
     cellRenderer: params => {
 

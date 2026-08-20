@@ -1,7 +1,10 @@
 from src.vcc.sync.titledb_sync import TitleDBSync
 from src.vcc.sync.storage import TitleDBStorage
 
+import requests
+
 from src.vcc.sync.tinfoil_sync import TinfoilSync
+from src.vcc.sources.nx_versions import NxVersionsSource
 
 
 class SyncService:
@@ -40,6 +43,13 @@ class SyncService:
 
         tinfoil_result = tinfoil.sync()
 
+        # This supplementary source must never stop the existing
+        # TitleDB/Tinfoil synchronization when GitHub is unavailable.
+        try:
+            nx_versions_result = NxVersionsSource().sync()
+        except (OSError, ValueError, requests.RequestException):
+            nx_versions_result = {"titles": 0, "cached": False}
+
         #
         # Merge statistics
         #
@@ -50,6 +60,13 @@ class SyncService:
 
         result["statistics"]["tinfoil_duration"] = (
             tinfoil_result["duration"]
+        )
+
+        result["statistics"]["nx_versions_titles"] = (
+            nx_versions_result["titles"]
+        )
+        result["statistics"]["nx_versions_cached"] = (
+            nx_versions_result["cached"]
         )
 
         return result["statistics"]
