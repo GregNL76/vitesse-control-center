@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template
 
-placeholders_bp = Blueprint("placeholders", __name__)
+from src.vcc.services.report_service import ReportService
 
+
+placeholders_bp = Blueprint("placeholders", __name__)
 
 @placeholders_bp.route("/missing-updates")
 def missing_updates():
@@ -20,7 +22,27 @@ def duplicates():
 
 @placeholders_bp.route("/reports")
 def reports():
-    return render_template("reports.html")
+
+    service = ReportService()
+
+    invalid_updates = (
+        service.invalid_update_title_ids()
+    )
+
+    versions_without_v = (
+        service.update_versions_without_v()
+    )
+
+    invalid_version_blocks = (
+        service.invalid_update_version_blocks()
+    )
+
+    return render_template(
+        "reports.html",
+        invalid_updates=invalid_updates,
+        versions_without_v=versions_without_v,
+        invalid_version_blocks=invalid_version_blocks,
+    )
 
 
 @placeholders_bp.route("/settings")

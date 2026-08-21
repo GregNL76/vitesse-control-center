@@ -11,17 +11,279 @@ Reports
 {% block content %}
 
 <div class="card">
+
     <div class="card-header">
-        Placeholder
+        Invalid Update Title IDs
     </div>
+
     <div class="card-body">
+
         <p class="mb-3">
-            This page will provide report generation and viewing capabilities in the future.
+            Files located in the UPDATES folder whose Title ID
+            does not end in 800.
         </p>
-        <div class="alert alert-info">
-            Functionality not yet implemented.
-        </div>
+
+        {% if invalid_updates %}
+
+            <div class="alert alert-warning">
+                {{ invalid_updates|length }}
+                problem{% if invalid_updates|length != 1 %}s{% endif %}
+                found.
+            </div>
+
+			<div class="table-responsive">
+
+				<table class="table table-dark table-hover align-middle">
+
+					<thead>
+						<tr>
+							<th>Filename</th>
+							<th>Size</th>
+							<th>Current ID</th>
+							<th>Expected ID</th>
+							<th>Matched BASE</th>
+							<th>Problem</th>
+						</tr>
+					</thead>
+
+					<tbody>
+
+						{% for item in invalid_updates %}
+
+						<tr>
+
+							<td>
+								{{ item.filename }}
+							</td>
+
+							<td style="white-space: nowrap;">
+								{{ item.size }}
+							</td>
+
+							<td style="white-space: nowrap; color: #ffffff;">
+								{% if item.title_id %}
+									{{ item.title_id }}
+								{% else %}
+									—
+								{% endif %}
+							</td>
+
+
+							<td style="white-space: nowrap; color: #ffffff;">
+								{% if item.expected_id %}
+									{{ item.expected_id }}
+								{% else %}
+									—
+								{% endif %}
+							</td>
+
+							<td>
+								{% if item.base_filename %}
+
+									<div>
+										{{ item.base_filename }}
+									</div>
+
+									<div style="white-space: nowrap; color: #ffffff;">
+										{{ item.base_id }}
+									</div>
+
+								{% else %}
+									—
+								{% endif %}
+							</td>
+							<td>
+								{{ item.problem }}
+							</td>
+
+						</tr>
+
+						{% endfor %}
+
+					</tbody>
+
+				</table>
+
+			</div>
+
+        {% else %}
+
+            <div class="alert alert-success mb-0">
+                No invalid update Title IDs found.
+            </div>
+
+        {% endif %}
+
     </div>
+
 </div>
+
+
+<div class="card mt-4">
+
+    <div class="card-header">
+        Update Version Numbers Without "v"
+    </div>
+
+    <div class="card-body">
+
+        <p class="mb-3">
+            Files in the UPDATES folder whose final version block
+            contains only a number instead of a version starting with "v".
+        </p>
+
+        {% if versions_without_v %}
+
+            <div class="alert alert-warning">
+                {{ versions_without_v|length }}
+                problem{% if versions_without_v|length != 1 %}s{% endif %}
+                found.
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Size</th>
+                            <th>Current</th>
+                            <th>Expected</th>
+                            <th>Problem</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in versions_without_v %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.filename }}
+                            </td>
+
+                            <td style="white-space: nowrap;">
+                                {{ item.size }}
+                            </td>
+
+                            <td style="white-space: nowrap; color: #ffffff;">
+                                [{{ item.version }}]
+                            </td>
+
+                            <td style="white-space: nowrap; color: #ffffff;">
+                                [{{ item.expected }}]
+                            </td>
+
+                            <td>
+                                {{ item.problem }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-success mb-0">
+                No update version numbers without "v" found.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
+<div class="card mt-4">
+
+    <div class="card-header">
+        Invalid Update Version Blocks
+    </div>
+
+    <div class="card-body">
+
+        <p class="mb-3">
+            Files in the UPDATES folder whose final version block
+            is missing or is not in the expected format [v123456].
+        </p>
+
+        {% if invalid_version_blocks %}
+
+            <div class="alert alert-warning">
+                {{ invalid_version_blocks|length }}
+                problem{% if invalid_version_blocks|length != 1 %}s{% endif %}
+                found.
+            </div>
+
+            <div class="table-responsive">
+
+                <table class="table table-dark table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Filename</th>
+                            <th>Size</th>
+                            <th>Version block</th>
+                            <th>Problem</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for item in invalid_version_blocks %}
+
+                        <tr>
+
+                            <td>
+                                {{ item.filename }}
+                            </td>
+
+                            <td style="white-space: nowrap;">
+                                {{ item.size }}
+                            </td>
+
+                            <td style="white-space: nowrap; color: #ffffff;">
+                                {% if item.version_block %}
+                                    [{{ item.version_block }}]
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {{ item.problem }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="alert alert-success mb-0">
+                No invalid update version blocks found.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
 
 {% endblock %}
