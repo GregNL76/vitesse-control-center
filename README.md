@@ -9,7 +9,14 @@ SQLite, synchronizes external title and version information, and
 provides a web-based dashboard for monitoring the health, structure and
 completeness of the library.
 
-VCC is powered by **GAMEBOY**: **Game Archive Management Engine for Backups, Organization & sYnchronization**.
+VCC is powered by <strong>GAMEBOY</strong>:
+<strong>G</strong>ame
+<strong>A</strong>rchive
+<strong>M</strong>anagement
+<strong>E</strong>ngine for
+<strong>B</strong>ackups,
+<strong>O</strong>rganization &
+s<strong>Y</strong>nchronization.
 
 ## Features
 
