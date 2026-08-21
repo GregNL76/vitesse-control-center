@@ -273,7 +273,80 @@ class ReportService:
             })
 
         return problems
-        
+
+
+    def invalid_base_version_blocks(self) -> list[dict]:
+
+        base_folder = Path(GAME_FOLDER) / "BASE"
+
+        problems = []
+
+        if not base_folder.exists():
+            return problems
+
+        valid_suffix_re = re.compile(
+            r"\[([0-9A-Fa-f]{16})\]\[v0\]$"
+        )
+
+        for file in sorted(
+            base_folder.iterdir(),
+            key=lambda item: item.name.lower(),
+        ):
+
+            if not file.is_file():
+                continue
+
+            if file.suffix.lower() not in SUPPORTED_EXTENSIONS:
+                continue
+
+            if valid_suffix_re.search(file.stem):
+                continue
+
+            title_match = TITLE_ID_RE.search(file.stem)
+
+            title_id = (
+                title_match.group(1).upper()
+                if title_match
+                else None
+            )
+
+            current = (
+                file.stem[title_match.end():].strip()
+                if title_match
+                else None
+            )
+
+            if not current:
+                current = None
+
+            if not title_id:
+                problem = "No valid Title ID"
+            elif re.search(
+                rf"\[{re.escape(title_id)}\]\s+\[v0\]$",
+                file.stem,
+                flags=re.IGNORECASE,
+            ):
+                problem = "Title ID and version block are not adjacent"
+            elif current is None:
+                problem = "No version block after Title ID"
+            elif current.lower().startswith("[v0]"):
+                problem = "Unexpected block after version block"
+            else:
+                problem = "BASE version block must be [v0]"
+
+            problems.append({
+                "filename": file.name,
+                "size": self._format_size(
+                    file.stat().st_size
+                ),
+                "title_id": title_id,
+                "current": current,
+                "expected": "[v0]",
+                "problem": problem,
+            })
+
+        return problems
+
     @staticmethod
     def _format_size(size_bytes: int) -> str:
 

@@ -37,11 +37,16 @@ def reports():
         service.invalid_update_version_blocks()
     )
 
+    invalid_base_versions = (
+        service.invalid_base_version_blocks()
+    )
+
     return render_template(
         "reports.html",
         invalid_updates=invalid_updates,
         versions_without_v=versions_without_v,
         invalid_version_blocks=invalid_version_blocks,
+        invalid_base_versions=invalid_base_versions,
     )
 
 
