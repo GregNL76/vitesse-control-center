@@ -21,7 +21,9 @@ class GitService:
                 check=True,
             )
 
-            stdout = result.stdout.strip()
+            # Porcelain status records use leading spaces as significant XY
+            # status columns. Only remove trailing line endings here.
+            stdout = result.stdout.rstrip("\r\n")
             stderr = result.stderr.strip()
 
             return stdout, stderr
@@ -76,7 +78,12 @@ class GitService:
 
     def modified_files(self) -> list:
 
-        output = self._run("status", "--short")
+        output = self._run("status", "--porcelain=v1")
+
+        return self._parse_porcelain(output)
+
+    @staticmethod
+    def _parse_porcelain(output: str) -> list:
 
         if not output:
             return []
@@ -85,8 +92,11 @@ class GitService:
 
         for line in output.splitlines():
 
+            if len(line) < 4 or line[2] != " ":
+                raise RuntimeError(f"Unexpected git status --porcelain=v1 output: {line!r}")
+
             status = line[:2].strip()
-            path = line[3:].strip()
+            path = line[3:]
 
             files.append(
                 {
