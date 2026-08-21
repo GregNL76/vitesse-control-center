@@ -9,6 +9,8 @@ SQLite, synchronizes external title and version information, and
 provides a web-based dashboard for monitoring the health, structure and
 completeness of the library.
 
+VCC is powered by **GAMEBOY**: **Game Archive Management Engine for Backups, Organization & sYnchronization**.
+
 ## Features
 
 ### Library Management
@@ -225,9 +227,9 @@ schema and individual components may change between versions.
 
 ## Disclaimer
 
-Vitesse Control Center is a library management and auditing project. It
-does not distribute Nintendo Switch games, updates or other copyrighted
-content.
+Vitesse Control Center is a library management and auditing project. 
+It does not distribute Nintendo Switch games, updates or other copyrighted content. 
+GAMEBOY is an unofficial project acronym, and VCC is not affiliated with or endorsed by Nintendo.
 
 ------------------------------------------------------------------------
 
