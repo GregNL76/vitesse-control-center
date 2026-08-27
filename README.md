@@ -38,6 +38,8 @@ independent external sources.
 
 -   Synchronize Nintendo Switch title metadata
 -   Retrieve available title and update versions from Tinfoil
+-   Resolve USA, EUR, ASIA, JPN and AUS regions for local Title IDs
+-   Let updates and DLC inherit the region of their base-title family
 -   Use **nx-versions** as an additional independent version source
 -   Cache nx-versions data locally to reduce unnecessary network traffic
 -   Compare the locally installed version against the highest known
@@ -85,6 +87,7 @@ Current dashboard sections include:
 -   **Obsolete Updates** --- Updates that are no longer the latest
     installed version
 -   **Reports** --- Library integrity and filename-structure auditing
+-   **Available Games** --- Searchable NSWGF catalogue cached for 24 hours
 -   **Settings** --- Reserved for configurable VCC options
 -   **Git** --- Repository status, modified files, commit/push
     functionality and a direct GitHub repository link

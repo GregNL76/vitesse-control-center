@@ -28,6 +28,8 @@ class Game:
     languages: str | None = None
     categories: str | None = None
 
+    region: str = "UNKNOWN"
+
     def has_update(self) -> bool:
 
         return self.latest_version > self.installed_version

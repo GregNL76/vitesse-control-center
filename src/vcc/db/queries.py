@@ -101,15 +101,17 @@ class DatabaseQueries:
         cursor = self.connection.connection.execute(
             """
             SELECT
-                title_id,
-                name,
-                version,
-                filename,
-                size,
-                full_path
-            FROM games
-            WHERE file_type='DLC'
-            ORDER BY name COLLATE NOCASE
+                g.title_id,
+                g.name,
+                g.version,
+                g.filename,
+                g.size,
+                g.full_path,
+                COALESCE(r.region, 'UNKNOWN') AS region
+            FROM games g
+            LEFT JOIN title_regions r ON r.title_id = g.title_id
+            WHERE g.file_type='DLC'
+            ORDER BY g.name COLLATE NOCASE
             """
         )
 
@@ -280,6 +282,8 @@ class DatabaseQueries:
 
                 m.categories,
 
+                COALESCE(r.region, 'UNKNOWN') AS region,
+
                 CASE
 
                     WHEN COALESCE(MAX(u.version),0) < COALESCE(t.version,0)
@@ -307,6 +311,10 @@ class DatabaseQueries:
 
                 ON t.title_id = b.title_id
 
+            LEFT JOIN title_regions r
+
+                ON r.title_id = b.title_id
+
             WHERE
 
                 b.file_type='BASE'
@@ -325,7 +333,8 @@ class DatabaseQueries:
                 m.icon_url,
                 m.banner_url,
                 m.languages,
-                m.categories
+                m.categories,
+                r.region
 
             ORDER BY
 

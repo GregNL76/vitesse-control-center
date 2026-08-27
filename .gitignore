@@ -19,6 +19,11 @@ data/*.db
 # Downloaded nx-versions cache
 data/nx_versions.json
 
+# Downloaded catalogue and region caches
+data/tinfoil_titles.json
+data/tinfoil_titles.cache.json
+data/nswgf_available_games.json
+
 # VCC SQLite database
 data/*.sqlite
 data/*.sqlite-shm

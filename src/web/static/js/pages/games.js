@@ -33,6 +33,12 @@ async function loadGrid() {
 			},
 
             {
+                field: "region",
+                headerName: "Region",
+                width: 100
+            },
+
+            {
                 field: "installed_display",
                 headerName: "Installed",
                 width: 100,

@@ -836,3 +836,99 @@ button:hover {
 .col-lg-3 .btn {
     min-height: 42px;
 }
+
+
+@font-face {
+    font-family: "Game Boy 1989";
+    src: url("../fonts/game_boy_1989.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.gameboy-word {
+    font-family: "Game Boy 1989", sans-serif;
+    font-style: normal;
+    font-weight: normal;
+}
+
+/* ==========================================================
+   Available Games
+   ========================================================== */
+
+.available-games-card {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0;
+    overflow: hidden;
+}
+
+.available-games-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+}
+
+.available-games-meta {
+    margin-top: 2px;
+    color: #8793a2;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.available-games-search {
+    display: flex;
+    width: min(420px, 100%);
+    gap: 8px;
+}
+
+.available-game-row {
+    grid-template-columns: 38px minmax(0, 1fr) 90px 88px;
+    color: inherit;
+    text-decoration: none;
+}
+
+.available-game-open {
+    color: #329cff;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: right;
+}
+
+.available-games-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    gap: 20px;
+    border-top: 1px solid rgba(80, 92, 108, .25);
+    color: #8793a2;
+    font-size: 13px;
+}
+
+.available-games-pagination a {
+    color: #329cff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+@media (max-width: 700px) {
+    .available-games-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .available-games-search {
+        width: 100%;
+    }
+
+    .available-game-row {
+        grid-template-columns: 34px minmax(0, 1fr) 70px;
+    }
+
+    .available-game-row .latest-addition-type {
+        display: none;
+    }
+}

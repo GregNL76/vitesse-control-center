@@ -28,6 +28,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             },
 
             {
+                field: "region",
+                headerName: "Region",
+                width: 95
+            },
+
+            {
                 field: "version",
                 headerName: "Version",
                 width: 100,

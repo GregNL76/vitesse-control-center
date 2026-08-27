@@ -4,6 +4,7 @@ from src.vcc.sync.storage import TitleDBStorage
 import requests
 
 from src.vcc.sync.tinfoil_sync import TinfoilSync
+from src.vcc.sync.region_sync import TitleRegionSync
 from src.vcc.sources.nx_versions import NxVersionsSource
 
 
@@ -30,6 +31,15 @@ class SyncService:
         ).save(
             result["metadata"]
         )
+
+        try:
+            region_result = TitleRegionSync(self.database).sync()
+        except (OSError, ValueError, requests.RequestException):
+            region_result = {
+                "titles": self.database.regions.count(),
+                "matched": self.database.regions.matched_count(),
+                "cached": True,
+            }
 
         #
         # ---------------------------------------------------------
@@ -68,5 +78,9 @@ class SyncService:
         result["statistics"]["nx_versions_cached"] = (
             nx_versions_result["cached"]
         )
+
+        result["statistics"]["region_titles"] = region_result["titles"]
+        result["statistics"]["region_matched"] = region_result["matched"]
+        result["statistics"]["region_cached"] = region_result["cached"]
 
         return result["statistics"]

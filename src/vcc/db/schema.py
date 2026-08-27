@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 7
 
 
 class DatabaseSchema:
@@ -159,6 +159,27 @@ class DatabaseSchema:
             """
             CREATE INDEX IF NOT EXISTS idx_title_metadata_publisher
             ON title_metadata(publisher)
+            """
+        )
+
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS title_regions
+            (
+                title_id        TEXT PRIMARY KEY,
+                region          TEXT NOT NULL,
+                source_region   TEXT,
+                countries       TEXT NOT NULL DEFAULT '[]',
+                source_title_id TEXT NOT NULL,
+                synced_at       TEXT NOT NULL
+            )
+            """
+        )
+
+        cursor.execute(
+            """
+            CREATE INDEX IF NOT EXISTS idx_title_regions_region
+            ON title_regions(region)
             """
         )
 

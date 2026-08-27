@@ -40,6 +40,7 @@ class GameService:
                     banner_url=row["banner_url"],
                     languages=row["languages"],
                     categories=row["categories"],
+                    region=row["region"],
                 )
             )
 
@@ -120,6 +121,8 @@ class GameService:
                 "languages": game.languages,
 
                 "categories": game.categories,
+
+                "region": game.region,
 
                 "external_links": {
                     "game_page":
@@ -218,6 +221,8 @@ class GameService:
         stats["tinfoil_titles"] = self.database.tinfoil.count()
 
         stats["metadata_titles"] = self.database.metadata_count()
+
+        stats["region_titles"] = self.database.regions.count()
 
         stats["missing_updates"] = len(
             self.database.queries.missing_updates()

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Available Games - Vitesse Control Center{% endblock %}
+{% block page_title %}Available Games{% endblock %}
+
+{% macro page_url(number) -%}
+    {{ url_for('available_games.available_games', page=number, q=search) }}
+{%- endmacro %}
+
+{% block content %}
+<div class="card available-games-card">
+    <div class="card-header available-games-header">
+        <div>
+            <div>NSWGF catalogue</div>
+            <div class="available-games-meta">
+                {{ total }} title{{ '' if total == 1 else 's' }}
+                {% if stale %} · cached copy{% endif %}
+            </div>
+        </div>
+        <form class="available-games-search" method="get">
+            <input class="form-control form-control-sm" type="search" name="q"
+                   value="{{ search }}" placeholder="Search available games…">
+            <button class="btn btn-primary btn-sm" type="submit">Search</button>
+        </form>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-warning m-3">{{ error }}</div>
+    {% endif %}
+
+    <div class="card-body p-0">
+        <div class="latest-additions-list available-games-list">
+            {% for game in games %}
+            <a class="latest-addition-row available-game-row"
+               href="{{ game.url }}" target="_blank" rel="noopener noreferrer">
+                <div class="latest-addition-icon latest-icon-base">
+                    <i class="bi bi-controller"></i>
+                </div>
+                <div class="latest-addition-name">{{ game.title }}</div>
+                <div class="latest-addition-type">
+                    <span class="file-type-badge badge-base">NSWGF</span>
+                </div>
+                <div class="available-game-open">
+                    Open <i class="bi bi-box-arrow-up-right"></i>
+                </div>
+            </a>
+            {% else %}
+            <div class="latest-addition-empty">
+                {% if search %}No titles found for “{{ search }}”.{% else %}No titles available.{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if total_pages > 1 %}
+    <div class="available-games-pagination">
+        {% if page > 1 %}<a href="{{ page_url(page - 1) }}">Previous</a>{% endif %}
+        <span>Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}<a href="{{ page_url(page + 1) }}">Next</a>{% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

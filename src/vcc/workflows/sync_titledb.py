@@ -29,6 +29,15 @@ class SyncTitleDbWorkflow:
         self.logger.info("  English titles   : %s", f"{count['english_titles']:,}")
 
         self.logger.info("")
+        self.logger.info("Regions")
+        self.logger.info("  Library IDs      : %s", f"{count['region_titles']:,}")
+        self.logger.info("  Matched          : %s", f"{count['region_matched']:,}")
+        self.logger.info(
+            "  Source cache     : %s",
+            "Yes" if count['region_cached'] else "Refreshed",
+        )
+
+        self.logger.info("")
         self.logger.info("Tinfoil")
         self.logger.info("  Titles           : %s", f"{count['tinfoil_titles']:,}")
         self.logger.info("  Duration         : %.2f sec", count['tinfoil_duration'])

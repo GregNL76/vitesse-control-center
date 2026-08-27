@@ -14,8 +14,9 @@ from .game import GameFile
 from .library import Library
 from src.vcc.db.tinfoil import TinfoilRepository
 from src.vcc.db.queries import DatabaseQueries
+from src.vcc.db.regions import RegionRepository
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 
 
 class Database:
@@ -39,10 +40,10 @@ class Database:
 
         self.queries = DatabaseQueries(self)
 
-        self.tinfoil = TinfoilRepository(
-            self.connection
-        )
-        
+        self.tinfoil = TinfoilRepository(self.connection)
+
+        self.regions = RegionRepository(self.connection)
+
     # -----------------------------------------------------------------
 
     def close(self):
@@ -52,25 +53,21 @@ class Database:
     # -----------------------------------------------------------------
 
     def initialize(self):
-
         """
         Create database schema if it does not yet exist.
         """
 
         cursor = self.connection.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS metadata
             (
                 key     TEXT PRIMARY KEY,
                 value   TEXT NOT NULL
             )
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS games
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -92,25 +89,19 @@ class Database:
 
                 modified        TEXT
             )
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_titleid
             ON games(title_id)
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_name
             ON games(name)
-            """
-        )
-        
-        cursor.execute(
-            """
+            """)
+
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS tinfoil_titles
             (
                 title_id        TEXT PRIMARY KEY,
@@ -121,15 +112,12 @@ class Database:
 
                 synced_at       TEXT NOT NULL
             )
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_tinfoil_titleid
             ON tinfoil_titles(title_id)
-            """
-        )
+            """)
 
         # Add the Tinfoil.media version column to existing databases.
         cursor.execute("PRAGMA table_info(tinfoil_titles)")
@@ -139,8 +127,7 @@ class Database:
                 "ALTER TABLE tinfoil_titles ADD COLUMN media_version INTEGER"
             )
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS title_metadata
             (
                 title_id            TEXT PRIMARY KEY,
@@ -181,25 +168,36 @@ class Database:
 
                 synced_at           TEXT
             )
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_title_metadata_name
             ON title_metadata(name)
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_title_metadata_publisher
             ON title_metadata(publisher)
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS title_regions
+            (
+                title_id        TEXT PRIMARY KEY,
+                region          TEXT NOT NULL,
+                source_region   TEXT,
+                countries       TEXT NOT NULL DEFAULT '[]',
+                source_title_id TEXT NOT NULL,
+                synced_at       TEXT NOT NULL
+            )
+            """)
+
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_title_regions_region
+            ON title_regions(region)
+            """)
+
+        cursor.execute("""
             CREATE TABLE IF NOT EXISTS activity_log
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -210,15 +208,45 @@ class Database:
                 message         TEXT NOT NULL,
                 details_json    TEXT
             )
-            """
-        )
+            """)
 
-        cursor.execute(
-            """
+        cursor.execute("""
             CREATE INDEX IF NOT EXISTS idx_activity_event_type
             ON activity_log(event_type)
-            """
-        )
+            """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS game_requests
+            (
+                id              INTEGER PRIMARY KEY AUTOINCREMENT,
+                requester_name  TEXT NOT NULL,
+                title           TEXT NOT NULL,
+                request_type    TEXT NOT NULL,
+                created_at      TEXT NOT NULL,
+                status          TEXT NOT NULL DEFAULT 'PENDING',
+                completed_at    TEXT
+            )
+            """)
+
+        request_columns = {
+            row[1] for row in cursor.execute("PRAGMA table_info(game_requests)")
+        }
+        if "status" not in request_columns:
+            cursor.execute(
+                "ALTER TABLE game_requests ADD COLUMN status TEXT NOT NULL DEFAULT 'PENDING'"
+            )
+        if "completed_at" not in request_columns:
+            cursor.execute("ALTER TABLE game_requests ADD COLUMN completed_at TEXT")
+
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_game_requests_created_at
+            ON game_requests(created_at DESC)
+            """)
+
+        cursor.execute("""
+            CREATE INDEX IF NOT EXISTS idx_game_requests_status
+            ON game_requests(status)
+            """)
 
         cursor.execute(
             """
@@ -240,20 +268,16 @@ class Database:
 
     # -----------------------------------------------------------------
 
-    
-
     @property
     def schema_version(self) -> int:
 
         cursor = self.connection.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT value
             FROM metadata
             WHERE key='schema_version'
-            """
-        )
+            """)
 
         row = cursor.fetchone()
 
@@ -265,27 +289,20 @@ class Database:
     # -----------------------------------------------------------------
 
     def clear_games(self):
-
         """
         Remove all stored game records.
         """
 
-        self.connection.execute(
-            "DELETE FROM games"
-        )
-
+        self.connection.execute("DELETE FROM games")
 
     # -----------------------------------------------------------------
 
     def clear_tinfoil_titles(self):
-
         """
         Remove all Tinfoil titles.
         """
 
-        self.connection.execute(
-            "DELETE FROM tinfoil_titles"
-        )
+        self.connection.execute("DELETE FROM tinfoil_titles")
 
     # -----------------------------------------------------------------
 
@@ -293,6 +310,7 @@ class Database:
         self,
         name: str,
         game_file: GameFile,
+        created_override: str | None = None,
     ):
 
         self.connection.execute(
@@ -322,7 +340,9 @@ class Database:
                 game_file.filename,
                 str(game_file.path),
                 game_file.size,
-                game_file.created.isoformat() if game_file.created else None,
+                created_override or (
+                    game_file.created.isoformat() if game_file.created else None
+                ),
                 game_file.modified.isoformat() if game_file.modified else None,
             ),
         )
@@ -330,12 +350,33 @@ class Database:
     # -----------------------------------------------------------------
 
     def save_library(self, library: Library):
+        """
+        Replace database contents with the current scan while preserving the
+        original addition date for the same Title ID, version and file type.
 
+        A rename changes the filesystem ctime on Linux/Synology. Without this
+        preservation, a renamed file incorrectly appears as newly added.
         """
-        Replace database contents with the current scan.
-        """
+
+        previous_created = {}
+        cursor = self.connection.execute(
+            """
+            SELECT title_id, version, file_type, created
+            FROM games
+            WHERE created IS NOT NULL
+            ORDER BY created ASC
+            """
+        )
+        for row in cursor.fetchall():
+            identity = (row["title_id"], row["version"], row["file_type"])
+            previous_created.setdefault(identity, row["created"])
 
         self.clear_games()
+
+        def original_created(game_file):
+            return previous_created.get(
+                (game_file.title_id, game_file.version, game_file.file_type)
+            )
 
         for game in library.all_games():
 
@@ -344,6 +385,7 @@ class Database:
                 self.insert_game_file(
                     game.name,
                     game.base,
+                    original_created(game.base),
                 )
 
             for update in game.updates:
@@ -351,32 +393,30 @@ class Database:
                 self.insert_game_file(
                     game.name,
                     update,
+                    original_created(update),
                 )
 
             for dlc in game.dlcs:
                 self.insert_game_file(
                     game.name,
                     dlc,
+                    original_created(dlc),
                 )
-        
+
         self.connection.commit()
 
     # -----------------------------------------------------------------
 
     def clear_title_metadata(self):
-
         """
         Remove all stored TitleDB metadata.
         """
 
-        self.connection.execute(
-            "DELETE FROM title_metadata"
-        )
+        self.connection.execute("DELETE FROM title_metadata")
 
     # -----------------------------------------------------------------
 
     def save_title_metadata(self, metadata: dict):
-
         """
         Store normalized TitleDB metadata.
         """
@@ -393,58 +433,36 @@ class Database:
         for item in metadata.values():
 
             rows.append(
-
                 (
-
                     item["title_id"],
-
                     item.get("name"),
-
                     item.get("publisher"),
-
                     item.get("developer"),
-
                     item.get("description"),
-
                     item.get("intro"),
-
                     item.get("release_date"),
-
                     json.dumps(
                         item.get("categories", []),
                         ensure_ascii=False,
                     ),
-
                     json.dumps(
                         item.get("languages", []),
                         ensure_ascii=False,
                     ),
-
                     item.get("players"),
-
                     item.get("rating"),
-
                     json.dumps(
                         item.get("rating_content", []),
                         ensure_ascii=False,
                     ),
-
                     item.get("icon_url"),
-
                     item.get("banner_url"),
-
                     item.get("rights_id"),
-
                     1 if item.get("is_demo") else 0,
-
                     item.get("latest_update_id"),
-
                     item.get("latest_version"),
-
                     synced,
-
                 )
-
             )
 
         self.connection.executemany(
@@ -488,21 +506,17 @@ class Database:
 
         cursor = self.connection.cursor()
 
-        cursor.execute(
-            """
+        cursor.execute("""
             SELECT COUNT(*)
             FROM games
-            """
-        )
+            """)
 
         game_files = cursor.fetchone()[0]
-        
-        cursor.execute(
-            """
+
+        cursor.execute("""
             SELECT COUNT(*)
             FROM tinfoil_titles
-            """
-        )
+            """)
 
         tinfoil_titles = cursor.fetchone()[0]
 
@@ -511,12 +525,12 @@ class Database:
             "schema": self.schema_version,
             "game_files": game_files,
             "tinfoil_titles": tinfoil_titles,
+            "region_titles": self.regions.count(),
         }
-        
+
         # ---------------------------------------------------------
 
     def save_tinfoil_titles(self, titles):
-
         """
         Temporary compatibility wrapper.
 
@@ -526,46 +540,38 @@ class Database:
         """
 
         self.tinfoil.save(titles)
-        
+
     # -----------------------------------------------------------------
 
     def game_count(self) -> int:
 
-        cursor = self.connection.execute(
-            """
+        cursor = self.connection.execute("""
             SELECT COUNT(*)
             FROM games
             WHERE file_type = 'BASE'
-            """
-        )
+            """)
 
         return cursor.fetchone()[0]
-
 
     # -----------------------------------------------------------------
 
     def update_count(self) -> int:
 
-        cursor = self.connection.execute(
-            """
+        cursor = self.connection.execute("""
             SELECT COUNT(*)
             FROM games
             WHERE file_type = 'UPDATE'
-            """
-        )
+            """)
 
         return cursor.fetchone()[0]
-
 
     # -----------------------------------------------------------------
 
     def metadata_count(self) -> int:
 
-        cursor = self.connection.execute(
-            """
+        cursor = self.connection.execute("""
             SELECT COUNT(*)
             FROM title_metadata
-            """
-        )
+            """)
 
-        return cursor.fetchone()[0]        
+        return cursor.fetchone()[0]
