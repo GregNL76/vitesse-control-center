@@ -5,6 +5,9 @@ __pycache__/
 # Virtual environment
 .venv/
 
+# VS Code
+.vscode/
+
 # Reports
 reports/
 
