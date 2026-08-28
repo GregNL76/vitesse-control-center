@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 
 {% macro format_size(bytes) %}
-    {% if bytes >= 1024**4 %}
-        {{ "%.2f"|format(bytes / 1024**4) }} TB
-    {% elif bytes >= 1024**3 %}
-        {{ "%.2f"|format(bytes / 1024**3) }} GB
-    {% elif bytes >= 1024**2 %}
-        {{ "%.2f"|format(bytes / 1024**2) }} MB
-    {% else %}
-        {{ "%.0f"|format(bytes / 1024) }} KB
-    {% endif %}
+{% if bytes >= 1024**4 %}
+{{ "%.2f"|format(bytes / 1024**4) }} TB
+{% elif bytes >= 1024**3 %}
+{{ "%.2f"|format(bytes / 1024**3) }} GB
+{% elif bytes >= 1024**2 %}
+{{ "%.2f"|format(bytes / 1024**2) }} MB
+{% else %}
+{{ "%.0f"|format(bytes / 1024) }} KB
+{% endif %}
 {% endmacro %}
 
 {% block title %}
@@ -44,8 +44,8 @@ Dashboard
                 </div>
 
                 <div class="stats-size">
-					{{ format_size(stats.games_size) }}                
-				</div>
+                    {{ format_size(stats.games_size) }}
+                </div>
             </div>
         </div>
 
@@ -66,8 +66,8 @@ Dashboard
                 </div>
 
                 <div class="stats-size">
-					{{ format_size(stats.updates_size) }}                
-				</div>
+                    {{ format_size(stats.updates_size) }}
+                </div>
             </div>
         </div>
 
@@ -163,107 +163,92 @@ Dashboard
 
 </div>
 
-    <div class="row mt-4">
+<div class="row mt-4">
 
- <!-- Latest Additions -->
-<div class="col-lg-9">
-    <div class="card h-100">
+    <!-- Latest Additions -->
+    <div class="col-lg-9">
+        <div class="card h-100">
 
-        <div class="card-header">
-            Latest Additions
-        </div>
+            <div class="card-header">
+                Latest Additions
+            </div>
 
-        <div class="card-body p-0">
+            <div class="card-body p-0">
 
-            <div class="latest-additions-list">
+                <div class="latest-additions-list">
 
-                {% for item in latest_additions %}
+                    {% for item in latest_additions %}
 
-                <div class="latest-addition-row">
+                    <div class="latest-addition-row">
 
-                    <!-- Icon -->
-                    <div class="latest-addition-icon
-                        {% if item["file_type"] == "BASE" %}
-                            latest-icon-base
-                        {% elif item["file_type"] == "UPDATE" %}
-                            latest-icon-update
-                        {% elif item["file_type"] == "DLC" %}
-                            latest-icon-dlc
-                        {% else %}
-                            latest-icon-default
-                        {% endif %}
-                    ">
+                        <!-- Icon -->
+                        <div class="latest-addition-icon
+                        {% if item[" file_type"]=="BASE" %} latest-icon-base {% elif item["file_type"]=="UPDATE" %}
+                            latest-icon-update {% elif item["file_type"]=="DLC" %} latest-icon-dlc {% else %}
+                            latest-icon-default {% endif %} ">
 
-                        <i class="bi bi-box"></i>
+                        <i class=" bi bi-box"></i>
 
-                    </div>
+                        </div>
 
 
-                    <!-- Name -->
-                    <div class="latest-addition-name">
-                        {{ item["name"] }}
-                    </div>
+                        <!-- Name -->
+                        <div class="latest-addition-name">
+                            {{ item["name"] }}
+                        </div>
 
 
-                    <!-- Type -->
-                    <div class="latest-addition-type">
+                        <!-- Type -->
+                        <div class="latest-addition-type">
 
-                        <span class="file-type-badge
-                            {% if item["file_type"] == "BASE" %}
-                                badge-base
-                            {% elif item["file_type"] == "UPDATE" %}
-                                badge-update
-                            {% elif item["file_type"] == "DLC" %}
-                                badge-dlc
-                            {% else %}
-                                badge-default
+                            <span class="file-type-badge
+                            {% if item[" file_type"]=="BASE" %} badge-base {% elif item["file_type"]=="UPDATE" %}
+                                badge-update {% elif item["file_type"]=="DLC" %} badge-dlc {% else %} badge-default {%
+                                endif %} ">
+                            {{ item[" file_type"] }} </span>
+
+                        </div>
+
+
+                        <!-- Size -->
+                        <div class="latest-addition-size">
+                            {{ format_size(item["size"]) }}
+                        </div>
+
+
+                        <!-- Date -->
+                        <div class="latest-addition-date">
+
+                            {% if item["created"] %}
+                            {{ item["created"][8:10] }} aug · {{ item["created"][11:16] }}
                             {% endif %}
-                        ">
-                            {{ item["file_type"] }}
-                        </span>
+
+                        </div>
 
                     </div>
 
+                    {% else %}
 
-                    <!-- Size -->
-                    <div class="latest-addition-size">
-                        {{ format_size(item["size"]) }}
+                    <div class="latest-addition-empty">
+                        No recent additions.
                     </div>
 
-
-                    <!-- Date -->
-                    <div class="latest-addition-date">
-
-						{% if item["created"] %}
-							{{ item["created"][8:10] }} aug · {{ item["created"][11:16] }}
-						{% endif %}
-
-                    </div>
+                    {% endfor %}
 
                 </div>
 
-                {% else %}
-
-                <div class="latest-addition-empty">
-                    No recent additions.
+                <div class="latest-additions-footer">
+                    <a href="/games" class="latest-additions-link">
+                        View all additions
+                        <i class="bi bi-arrow-right"></i>
+                    </a>
                 </div>
-
-                {% endfor %}
 
             </div>
 
-    <div class="latest-additions-footer">
-        <a href="/games" class="latest-additions-link">
-            View all additions
-            <i class="bi bi-arrow-right"></i>
-        </a>
-    </div>
-
         </div>
 
     </div>
-
-</div>
 
     <!-- Right column -->
     <div class="col-lg-3">
@@ -279,14 +264,9 @@ Dashboard
 
             <div class="card-body d-grid gap-2">
 
-                <form
-                    id="refresh-form"
-                    action="/refresh-titledb"
-                    method="post">
+                <form id="refresh-form" action="/refresh-titledb" method="post">
 
-                    <button
-                        id="refresh-button"
-                        class="btn btn-primary w-100">
+                    <button id="refresh-button" class="btn btn-primary w-100">
 
                         <i class="bi bi-arrow-repeat"></i>
                         Refresh Library
@@ -295,9 +275,7 @@ Dashboard
 
                 </form>
 
-                <button
-                    id="auditor-button"
-                    class="btn btn-outline-secondary w-100">
+                <button id="auditor-button" class="btn btn-outline-secondary w-100">
 
                     <i class="bi bi-search"></i>
                     Run Update Auditor
@@ -343,86 +321,94 @@ Dashboard
 
 </div>
 
-		<script>
-		document.getElementById("refresh-form").addEventListener("submit", async function(event) {
-			event.preventDefault();
+<script>
+    document.getElementById("refresh-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
 
-			const button = document.getElementById("refresh-button");
+        const button = document.getElementById("refresh-button");
 
-			button.disabled = true;
-			button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refreshing...';
+        button.disabled = true;
+        button.innerHTML = '<i class="bi bi-arrow-repeat"></i> Refreshing...';
 
-			try {
-				const response = await fetch("/refresh-titledb", {
-					method: "POST"
-				});
+        try {
+            const response = await fetch("/refresh-titledb", {
+                method: "POST"
+            });
 
-if (!response.ok) {
+            const payload = response.headers.get("Content-Type")?.includes("application/json")
+                ? await response.json()
+                : null;
 
-    const errorText = await response.text();
+            if (!response.ok) {
+                const errorText = payload?.summary || await response.text();
+                throw new Error(
+                    errorText || `Refresh failed: HTTP ${response.status}`
+                );
+            }
 
-    throw new Error(
-        errorText || `Refresh failed: HTTP ${response.status}`
-    );
-}
+            const vccState = payload?.vcc_refresh || "unknown";
+            const vitesseState = payload?.vitesseshop_refresh || "unknown";
+            const stateLabel = vccState === "success"
+                ? `VCC OK · VitesseShop ${vitesseState}`
+                : `VCC ${vccState} · VitesseShop ${vitesseState}`;
 
-				button.innerHTML = '<i class="bi bi-check-lg"></i> Refreshed';
+            button.innerHTML = '<i class="bi bi-check-lg"></i> ' + stateLabel;
 
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
+            setTimeout(() => {
+                window.location.reload();
+            }, 1200);
 
-} catch (error) {
+        } catch (error) {
 
-    console.error("Refresh Library failed:", error);
+            console.error("Refresh Library failed:", error);
 
-    button.innerHTML =
-        `<i class="bi bi-x-lg"></i> ${error.message}`;
+            button.innerHTML =
+                `<i class="bi bi-x-lg"></i> ${error.message}`;
 
-    setTimeout(() => {
-        button.innerHTML =
-            '<i class="bi bi-arrow-repeat"></i> Refresh Library';
+            setTimeout(() => {
+                button.innerHTML =
+                    '<i class="bi bi-arrow-repeat"></i> Refresh Library';
 
-        button.disabled = false;
-    }, 5000);
-}
-		});
-		</script>
+                button.disabled = false;
+            }, 5000);
+        }
+    });
+</script>
 
 
-		<script>
-		document.getElementById("auditor-button").addEventListener("click", async function() {
+<script>
+    document.getElementById("auditor-button").addEventListener("click", async function () {
 
-			const button = this;
+        const button = this;
 
-			button.disabled = true;
-			button.innerHTML = '<i class="bi bi-search"></i> Running...';
+        button.disabled = true;
+        button.innerHTML = '<i class="bi bi-search"></i> Running...';
 
-			try {
-				const response = await fetch("/api/tasks/run-audits", {
-					method: "POST"
-				});
+        try {
+            const response = await fetch("/api/tasks/run-audits", {
+                method: "POST"
+            });
 
-				if (!response.ok) {
-					throw new Error("Auditor failed");
-				}
+            if (!response.ok) {
+                throw new Error("Auditor failed");
+            }
 
-				button.innerHTML = '<i class="bi bi-check-lg"></i> Audited';
+            button.innerHTML = '<i class="bi bi-check-lg"></i> Audited';
 
-				setTimeout(() => {
-					window.location.href = "/missing-updates";
-				}, 500);
+            setTimeout(() => {
+                window.location.href = "/missing-updates";
+            }, 500);
 
-			} catch (error) {
+        } catch (error) {
 
-				button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';
+            button.innerHTML = '<i class="bi bi-x-lg"></i> Failed';
 
-				setTimeout(() => {
-					button.innerHTML = '<i class="bi bi-search"></i> Run Update Auditor';
-					button.disabled = false;
-				}, 3000);
-			}
-		});
-		</script>
+            setTimeout(() => {
+                button.innerHTML = '<i class="bi bi-search"></i> Run Update Auditor';
+                button.disabled = false;
+            }, 3000);
+        }
+    });
+</script>
 
-    {% endblock %}
+{% endblock %}

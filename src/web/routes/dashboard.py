@@ -16,6 +16,7 @@ dashboard_bp = Blueprint(
 # Database
 # ---------------------------------------------------------------------
 
+
 def get_database():
 
     if "database" not in g:
@@ -30,13 +31,12 @@ def get_database():
 # Repository
 # ---------------------------------------------------------------------
 
+
 def get_repository():
 
     if "repository" not in g:
 
-        g.repository = Repository(
-            get_database()
-        )
+        g.repository = Repository(get_database())
 
     return g.repository
 
@@ -44,6 +44,7 @@ def get_repository():
 # ---------------------------------------------------------------------
 # Dashboard service
 # ---------------------------------------------------------------------
+
 
 def get_dashboard_service():
 
@@ -57,9 +58,7 @@ def get_dashboard_service():
         # dan hoeft alleen deze functie aangepast te worden.
         #
 
-        g.dashboard_service = DashboardService(
-            get_database()
-        )
+        g.dashboard_service = DashboardService(get_database())
 
     return g.dashboard_service
 
@@ -68,13 +67,12 @@ def get_dashboard_service():
 # Sync service
 # ---------------------------------------------------------------------
 
+
 def get_sync_service():
 
     if "sync_service" not in g:
 
-        g.sync_service = SyncService(
-            get_database()
-        )
+        g.sync_service = SyncService(get_database())
 
     return g.sync_service
 
@@ -82,6 +80,7 @@ def get_sync_service():
 # ---------------------------------------------------------------------
 # Cleanup
 # ---------------------------------------------------------------------
+
 
 @dashboard_bp.teardown_app_request
 def close_database(error=None):
@@ -93,10 +92,10 @@ def close_database(error=None):
         database.close()
 
 
-
 # ---------------------------------------------------------------------
 # Dashboard
 # ---------------------------------------------------------------------
+
 
 @dashboard_bp.route("/")
 def index():
@@ -106,23 +105,18 @@ def index():
     data = dashboard.overview()
 
     return render_template(
-
         "dashboard.html",
-
         stats=data["statistics"],
-
         largest_games=data["largest_games"],
-
         missing_updates=data["missing_updates"],
-
         latest_additions=data["latest_additions"],
-
     )
 
 
 # ---------------------------------------------------------------------
 # Refresh TitleDB
 # ---------------------------------------------------------------------
+
 
 @dashboard_bp.route(
     "/refresh-titledb",
@@ -132,9 +126,16 @@ def refresh_titledb():
 
     try:
 
-        FullRefreshTask().execute()
+        result = FullRefreshTask().execute()
 
-        return "", 204
+        response = {
+            "success": result["vcc_refresh"] == "success",
+            "vcc_refresh": result["vcc_refresh"],
+            "vitesseshop_refresh": result["vitesseshop_refresh"],
+            "summary": result["summary"],
+        }
+
+        return response, 200 if response["success"] else 500
 
     except Exception as e:
 
