@@ -1,5 +1,6 @@
 from flask import Flask, g
 
+from src.web.routes.switch_checker import switch_checker_bp
 from src.web.routes.dashboard import dashboard_bp
 from src.vcc.config import PROJECT_ROOT
 from src.vcc.database import Database
@@ -46,6 +47,8 @@ def create_app():
     app.register_blueprint(placeholders_bp)
     
     app.register_blueprint(tasks_bp)
+
+    app.register_blueprint(switch_checker_bp)
 
     app.register_blueprint(available_games_bp)
 

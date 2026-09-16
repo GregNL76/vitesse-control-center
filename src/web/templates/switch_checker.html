@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}
+Switch Serial Checker - Vitesse Control Center
+{% endblock %}
+
+{% block page_title %}
+Switch Serial Checker
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+    <div class="col-xl-9 col-xxl-8">
+
+        <div class="card mb-4">
+
+            <div class="card-header">
+                <i class="bi bi-nintendo-switch me-2"></i>
+                Nintendo Switch Serial Checker
+            </div>
+
+            <div class="card-body">
+
+                <p class="text-muted">
+                    Enter the serial number printed on your Nintendo Switch.
+                    VCC will check whether the console falls inside a known
+                    fusee-gelee serial range.
+                </p>
+
+                <form method="post">
+
+                    <label for="serial" class="form-label">
+                        Serial number
+                    </label>
+
+                    <div class="input-group input-group-lg">
+
+                        <input
+                            type="text"
+                            class="form-control font-monospace"
+                            id="serial"
+                            name="serial"
+                            value="{{ serial }}"
+                            placeholder="e.g. XAW10058372619"
+                            autocomplete="off"
+                            autofocus
+                            required>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search me-1"></i>
+                            Check Serial
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+        {% if result %}
+
+        <div class="card">
+
+            <div class="card-header">
+                Result
+            </div>
+
+            <div class="card-body">
+
+                {% if result.status == "UNPATCHED" %}
+
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-check-circle-fill me-2"></i>
+                            UNPATCHED
+                        </h4>
+
+                        <p class="mb-0">
+                            {{ result.message }}
+                        </p>
+                    </div>
+
+                {% elif result.status == "POSSIBLY PATCHED" %}
+
+                    <div class="alert alert-warning">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            POSSIBLY PATCHED
+                        </h4>
+
+                        <p class="mb-0">
+                            {{ result.message }}
+                        </p>
+                    </div>
+
+                {% elif result.status == "PATCHED" %}
+
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-x-circle-fill me-2"></i>
+                            PATCHED
+                        </h4>
+
+                        <p class="mb-0">
+                            {{ result.message }}
+                        </p>
+                    </div>
+
+                {% else %}
+
+                    <div class="alert alert-secondary">
+                        <h4 class="alert-heading">
+                            <i class="bi bi-question-circle-fill me-2"></i>
+                            UNKNOWN
+                        </h4>
+
+                        <p class="mb-0">
+                            {{ result.message }}
+                        </p>
+                    </div>
+
+                {% endif %}
+
+
+                <div class="row mt-4">
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="text-muted small">
+                            SERIAL
+                        </div>
+
+                        <div class="font-monospace fs-5">
+                            {{ result.serial }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="text-muted small">
+                            PREFIX
+                        </div>
+
+                        <div class="font-monospace fs-5">
+                            {{ result.prefix or "Unknown" }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {% if result.range_info %}
+
+                <hr>
+
+                <h6 class="mb-3">
+                    Range used
+                </h6>
+
+                <div class="row">
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="text-muted small">
+                            END OF KNOWN UNPATCHED RANGE
+                        </div>
+
+                        <div class="font-monospace">
+                            {{ result.range_info.unpatched_max }}
+                        </div>
+
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+
+                        <div class="text-muted small">
+                            START OF KNOWN PATCHED RANGE
+                        </div>
+
+                        <div class="font-monospace">
+                            {{ result.range_info.patched_min }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% endif %}
+
+
+                <hr>
+
+                <div class="small text-muted">
+
+                    Dataset:
+                    {{ result.dataset_source }}
+
+                    <br>
+
+                    Dataset version:
+                    {{ result.dataset_version }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="alert alert-dark border-secondary mt-4">
+
+            <i class="bi bi-info-circle me-2"></i>
+
+            Serial-number checking is based on known manufacturing ranges.
+            A result in the transition range cannot determine with certainty
+            whether an individual console is patched.
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
